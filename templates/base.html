@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css">
+    <title>{% block pagetitle %}{% endblock %}{% block installationtitle %}Wishlist2{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <header>
+      <h1>{% block header %}Flask tutorial{% endblock %}</h1>
+    </header>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <footer>
+      {% block footer %}
+      Look at this amazing footer. Much wow.
+      {% endblock %}
+    </footer>
+  </body>
+</html>
