@@ -13,7 +13,12 @@ class Wishlist:
             db.session.commit()
 
     def getPriorityOrderedWishes(self):
-        wishes = []
+        with app.app_context():
+            wishes = db.session.scalars(select(Wish).where(Wish.giver == '').order_by(Wish.priority.desc())).all()
+            wishes += db.session.scalars(select(Wish).where(Wish.giver != '').order_by(Wish.priority.desc())).all()
+        return wishes
+
+    def getPriorityOrderedWishesNoSpoiler(self):
         with app.app_context():
             wishes = db.session.scalars(select(Wish).order_by(Wish.priority.desc())).all()
         return wishes

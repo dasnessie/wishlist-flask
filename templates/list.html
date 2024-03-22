@@ -4,14 +4,19 @@
 {% block pagetitle %}Nessies Wunschzettel - {% endblock %}
 {% block header %}Nessies Wunschzettel{% endblock %}
 {% block content %}
-    {% for wish in wishlist.getPriorityOrderedWishes() %}
+    {% for wish in orderedWishlist %}
         <article>
-            {% if wish.link %}
-            <h3><a href="{{ wish.link }}">{{ wish.title }}</a></h3>
-            {% else %}
-            <h3>{{ wish.title }}</h3>
-            {% endif %}
+            {% if wish.giver != '' and not noSpoiler %}<del>{% endif %}
+            <h3>
+                {% if wish.link %}
+                <a href="{{ wish.link }}">{{ wish.title }}</a>
+                {% else %}
+                {{ wish.title }}
+                {% endif %}
+                {% if wish.giver != '' and not noSpoiler %}(wird schon geschenkt){% endif %}
+            </h3>
             {{ wish.desc }}
+            {% if wish.giver != '' and not noSpoiler %}</del>{% endif %}
         </article>
     {% endfor %}
 {% endblock %}
