@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, make_response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
@@ -25,8 +25,15 @@ if len(wishlist.getPriorityOrderedWishes()) == 0:
 
 @app.route("/")
 def listView():
-    return render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishes())
+    resp = make_response(render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishes()))
+    if request.args.get('yesSpoiler') == '1':
+        resp.delete_cookie('noSpoiler')
+    elif request.cookies.get('noSpoiler') == '1':
+        return redirect(url_for('noSpoilerView'))
+    return resp
 
 @app.route("/nospoiler")
 def noSpoilerView():
-    return render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(), noSpoiler=True, stats=wishlist.getStats())
+    resp = make_response(render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(), noSpoiler=True, stats=wishlist.getStats()))
+    resp.set_cookie('noSpoiler', '1')
+    return resp

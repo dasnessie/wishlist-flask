@@ -5,6 +5,7 @@
 {% block header %}Nessies Wunschzettel{% endblock %}
 {% block content %}
     {% if noSpoiler %}
+    <a href="/?yesSpoiler=1">Spoiler anzeigen</a>
     <details>
         <summary>Stats</summary>
         Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}
