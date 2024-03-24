@@ -29,4 +29,4 @@ def listView():
 
 @app.route("/nospoiler")
 def noSpoilerView():
-    return render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(), noSpoiler=True)
+    return render_template('list.html', orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(), noSpoiler=True, stats=wishlist.getStats())

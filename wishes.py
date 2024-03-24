@@ -14,14 +14,20 @@ class Wishlist:
 
     def getPriorityOrderedWishes(self):
         with app.app_context():
-            wishes = db.session.scalars(select(Wish).where(Wish.giver == '').order_by(Wish.priority.desc())).all()
-            wishes += db.session.scalars(select(Wish).where(Wish.giver != '').order_by(Wish.priority.desc())).all()
+            wishes = db.session.scalars(select(Wish).order_by((Wish.giver=='').desc(), Wish.priority.desc())).all()
         return wishes
 
     def getPriorityOrderedWishesNoSpoiler(self):
         with app.app_context():
             wishes = db.session.scalars(select(Wish).order_by(Wish.priority.desc())).all()
         return wishes
+    
+    def getStats(self):
+        with app.app_context():
+            stats = {}
+            stats['count'] = db.session.query(Wish).count()
+            stats['fulfilled'] = db.session.query(Wish).filter(Wish.giver != '').count()
+        return stats
 
 class Wish(db.Model):
     __tablename__ = "wishes"

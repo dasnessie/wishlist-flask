@@ -4,6 +4,12 @@
 {% block pagetitle %}Nessies Wunschzettel - {% endblock %}
 {% block header %}Nessies Wunschzettel{% endblock %}
 {% block content %}
+    {% if noSpoiler %}
+    <details>
+        <summary>Stats</summary>
+        Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}
+    </details>
+    {% endif %}
     {% for wish in orderedWishlist %}
         <article>
             {% if wish.giver != '' and not noSpoiler %}<del>{% endif %}
