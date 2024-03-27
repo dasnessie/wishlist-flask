@@ -1,8 +1,8 @@
 <!doctype html>
 {% extends "base.html" %}
 
-{% block pagetitle %}Nessies Wunschzettel - {% endblock %}
-{% block header %}Nessies Wunschzettel{% endblock %}
+{% block pagetitle %}{{ ownerName }}s Wunschzettel - {% endblock %}
+{% block header %}{{ ownerName }}s Wunschzettel{% endblock %}
 {% block content %}
     {% if noSpoiler %}
     <a href="/?yesSpoiler=1">Spoiler anzeigen</a>
