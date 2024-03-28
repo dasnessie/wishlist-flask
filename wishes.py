@@ -1,5 +1,6 @@
 from sqlalchemy import Integer, String, select
 from sqlalchemy.orm import Mapped, mapped_column
+from urllib.parse import urlparse
 
 from app import db, app
 
@@ -28,6 +29,12 @@ class Wishlist:
             stats['count'] = db.session.query(Wish).count()
             stats['fulfilled'] = db.session.query(Wish).filter(Wish.giver != '').count()
         return stats
+
+    def getWishByID(self, id):
+        with app.app_context():
+            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+        return wish
+
 
 class Wish(db.Model):
     __tablename__ = "wishes"
@@ -61,5 +68,15 @@ class Wish(db.Model):
         self.endless = endless
         self.giver = giver
         self.secret = secret
+
+    def getLinkDomain(self):
+        parsedLink = urlparse(self.link)
+        domain = parsedLink.netloc
+
+        # Remove any leading "www." from the domain
+        if domain.startswith("www."):
+            domain = domain[4:]
+
+        return domain
 
 

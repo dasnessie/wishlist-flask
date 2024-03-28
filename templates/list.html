@@ -22,7 +22,19 @@
                 {% endif %}
                 {% if wish.giver != '' and not noSpoiler %}(wird schon geschenkt){% endif %}
             </h3>
-            {{ wish.desc }}
+            {% if wish.desc %}
+                <p>
+                    {{ wish.desc }}
+                </p>
+            {% endif %}
+            {% if wish.link %}
+                <p>
+                    <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                </p>
+            {% endif %}
+            <p>
+            <a class="fulfill-button" href="/gift-{{ wish.id }}">Das schenke ich!</a>
+            </p>
             {% if wish.giver != '' and not noSpoiler %}</del>{% endif %}
         </article>
     {% endfor %}
