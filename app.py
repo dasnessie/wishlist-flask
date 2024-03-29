@@ -44,6 +44,10 @@ def listView():
     return resp
 
 @app.route("/nospoiler")
+def noSpoilerRedirect():
+    return redirect(url_for('noSpoilerView'))
+
+@app.route("/noSpoiler")
 def noSpoilerView():
     resp = make_response(render_template('list.html', ownerName=app.config['OWNER_NAME'], orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(), noSpoiler=True, stats=wishlist.getStats()))
     resp.set_cookie('noSpoiler', '1')
