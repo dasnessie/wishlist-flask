@@ -13,29 +13,31 @@
     {% endif %}
     {% for wish in orderedWishlist %}
         <article>
-            {% if wish.giver != '' and not noSpoiler %}<del>{% endif %}
-            <h3>
-                {% if wish.link %}
-                <a href="{{ wish.link }}">{{ wish.title }}</a>
-                {% else %}
-                {{ wish.title }}
+            {% if wish.isFulfilled() and not noSpoiler %}<del>{% endif %}
+                <h3>
+                    {% if wish.link %}
+                        <a href="{{ wish.link }}">{{ wish.title }}</a>
+                    {% else %}
+                        {{ wish.title }}
+                    {% endif %}
+                    {% if wish.isFulfilled() and not noSpoiler %}(wird schon geschenkt){% endif %}
+                </h3>
+                {% if wish.desc %}
+                    <p>
+                        {{ wish.desc }}
+                    </p>
                 {% endif %}
-                {% if wish.giver != '' and not noSpoiler %}(wird schon geschenkt){% endif %}
-            </h3>
-            {% if wish.desc %}
-                <p>
-                    {{ wish.desc }}
-                </p>
-            {% endif %}
-            {% if wish.link %}
-                <p>
-                    <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
-                </p>
-            {% endif %}
-            <p>
-            <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
-            </p>
-            {% if wish.giver != '' and not noSpoiler %}</del>{% endif %}
+                {% if wish.link %}
+                    <p>
+                        <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                    </p>
+                {% endif %}
+                {% if not wish.isFulfilled() or noSpoiler %}
+                    <p>
+                    <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
+                    </p>
+                {% endif %}
+            {% if wish.isFulfilled() and not noSpoiler %}</del>{% endif %}
         </article>
     {% endfor %}
 {% endblock %}

@@ -1,0 +1,12 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Oh nein, etwas ist schiefgegangen!</h3>
+<p>
+    Du hast versucht, einen Wunsch als erledigt zu markieren, der schon als erledigt markiert war. 
+    Möglicherweise hat ihn jemand als erledigt markiert, während du schon auf der Wunschzettelseite warst.
+    Bitte geh zurück zum Wunschzettel und such dir etwas anderes aus!
+</p>
+<p><a href="/">zurück zum Wunschzettel</a></p>
+{% endblock%}

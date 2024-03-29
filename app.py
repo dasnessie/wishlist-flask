@@ -22,7 +22,7 @@ setDefaultConfigValues(app)
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-from wishes import Wishlist
+from wishes import Wishlist, SecretMismatchError, WishFulfilledError
 
 with app.app_context():
     db.create_all()
@@ -55,12 +55,18 @@ def noSpoilerView():
 
 @app.route("/gift<int:id>", methods=["GET"])
 def giftView(id):
+    wish = wishlist.getWishByID(id)
+    if wish.isFulfilled():
+        return render_template('wish_already_fulfilled.html', ownerName=app.config['OWNER_NAME'])
     return render_template('gift.html', ownerName=app.config['OWNER_NAME'], wishTitle=wishlist.getWishByID(id).title)
 
 @app.route("/gift<int:id>", methods=["POST"])
 def giftFormSubmit(id):
     giver = request.form['user_nickname']
-    wishlist.markFulfilled(id, giver)
+    try:
+        wishlist.markFulfilled(id, giver)
+    except WishFulfilledError:
+        return render_template('wish_already_fulfilled.html', ownerName=app.config['OWNER_NAME'])
     secret = wishlist.getWishByID(id).secret
     return redirect(url_for('thankYouView', id=id, secret=secret))
     # return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)
@@ -69,13 +75,14 @@ def giftFormSubmit(id):
 def thankYouView(id, secret):
     wish = wishlist.getWishByID(id)
     if (wish.secret != secret):
-        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch.")
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch."), 403
     return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title, url=request.url)
 
 @app.route("/gift<int:id>/<secret>", methods=["POST"])
 def undoGiftFulfillFormSubmit(id, secret):
     wish = wishlist.getWishByID(id)
-    if (wish.secret != secret):
-        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch.")
-    wishlist.reopenGift(id)
+    try:
+        wishlist.reopenGift(id)
+    except SecretMismatchError:
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch."), 403
     return redirect(url_for('listView'))

@@ -92,7 +92,12 @@ class Wish(db.Model):
 
         return domain
 
+    def isFulfilled(self):
+        return self.giver != ''
+
     def markFulfilled(self, giver:str):
+        if self.isFulfilled:
+            raise WishFulfilledError()
         self.giver = giver
         self.secret = uuid4().hex
 
@@ -100,4 +105,16 @@ class Wish(db.Model):
         self.giver = ''
         self.secret = ''
 
+class SecretMismatchError(ValueError):
+    def __init__(self, *args):
+        super().__init__(args)
 
+    def __str__(self):
+        return f'The given secret does not match the wishes secret!'
+
+class WishFulfilledError(ValueError):
+    def __init__(self, *args):
+        super().__init__(args)
+
+    def __str__(self):
+        return f'The wish is already fulfilled!'
