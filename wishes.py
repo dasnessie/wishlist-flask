@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, select
 from sqlalchemy.orm import Mapped, mapped_column
 from urllib.parse import urlparse
+from uuid import uuid4
 
 from app import db, app
 
@@ -39,6 +40,12 @@ class Wishlist:
         with app.app_context():
             wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
             wish.markFulfilled(giver)
+            db.session.commit()
+
+    def reopenGift(self, id):
+        with app.app_context():
+            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+            wish.reopen()
             db.session.commit()
 
 
@@ -87,5 +94,10 @@ class Wish(db.Model):
 
     def markFulfilled(self, giver:str):
         self.giver = giver
+        self.secret = uuid4().hex
+
+    def reopen(self):
+        self.giver = ''
+        self.secret = ''
 
 

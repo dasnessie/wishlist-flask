@@ -61,4 +61,21 @@ def giftView(id):
 def giftFormSubmit(id):
     giver = request.form['user_nickname']
     wishlist.markFulfilled(id, giver)
-    return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)
+    secret = wishlist.getWishByID(id).secret
+    return redirect(url_for('thankYouView', id=id, secret=secret))
+    # return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)
+
+@app.route("/gift<int:id>/<secret>", methods=["GET"])
+def thankYouView(id, secret):
+    wish = wishlist.getWishByID(id)
+    if (wish.secret != secret):
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch.")
+    return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title, url=request.url)
+
+@app.route("/gift<int:id>/<secret>", methods=["POST"])
+def undoGiftFulfillFormSubmit(id, secret):
+    wish = wishlist.getWishByID(id)
+    if (wish.secret != secret):
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch.")
+    wishlist.reopenGift(id)
+    return redirect(url_for('listView'))

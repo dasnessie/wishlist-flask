@@ -2,5 +2,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Thank you, {{ giver }}!</p>
+    <h3>Du hast folgendes als erledigt markiert: {{ wishTitle }}</h3>
+    <p>Wenn du dich anders entscheiden solltest, 
+        kannst du den Wunsch weiter unten auf dieser Seite wieder als offen markieren.
+        Du kannst dafür ein Lesezeichen setzen oder dir diese URL speichern:
+        <a href="{{ url }}">{{ url }}</a></p>
+    <p>Wenn du die URL vergisst, kannst du den Wunsch nicht mehr als offen markieren.</p>
+    <p>
+        <form method="post">
+            Und hier kannst du den Wunsch wieder als offen markieren:
+            <p>
+                <input type="submit" value="als offen markieren">
+            </p>
+        </form>
+    </p>
+    <p><a href="/">zurück zum Wunschzettel</a></p>
 {% endblock%}
