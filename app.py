@@ -53,11 +53,12 @@ def noSpoilerView():
     resp.set_cookie('noSpoiler', '1')
     return resp
 
-@app.route("/gift-<int:id>", methods=["GET"])
+@app.route("/gift<int:id>", methods=["GET"])
 def giftView(id):
     return render_template('gift.html', ownerName=app.config['OWNER_NAME'], wishTitle=wishlist.getWishByID(id).title)
 
-@app.route("/gift-<int:id>", methods=["POST"])
+@app.route("/gift<int:id>", methods=["POST"])
 def giftFormSubmit(id):
-    print(request.form)
-    return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=request.form['user_nickname'])
+    giver = request.form['user_nickname']
+    wishlist.markFulfilled(id, giver)
+    return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)

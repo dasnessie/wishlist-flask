@@ -33,7 +33,7 @@
                 </p>
             {% endif %}
             <p>
-            <a class="fulfill-button" href="/gift-{{ wish.id }}">Das schenke ich!</a>
+            <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
             </p>
             {% if wish.giver != '' and not noSpoiler %}</del>{% endif %}
         </article>

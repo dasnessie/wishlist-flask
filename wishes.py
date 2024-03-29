@@ -35,6 +35,12 @@ class Wishlist:
             wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
         return wish
 
+    def markFulfilled(self, id, giver):
+        with app.app_context():
+            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+            wish.markFulfilled(giver)
+            db.session.commit()
+
 
 class Wish(db.Model):
     __tablename__ = "wishes"
@@ -78,5 +84,8 @@ class Wish(db.Model):
             domain = domain[4:]
 
         return domain
+
+    def markFulfilled(self, giver:str):
+        self.giver = giver
 
 
