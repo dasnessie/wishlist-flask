@@ -33,20 +33,39 @@ class Wishlist:
 
     def getWishByID(self, id):
         with app.app_context():
-            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+            wish = self.__dbCallGetWishById(id)
         return wish
 
     def markFulfilled(self, id, giver):
         with app.app_context():
-            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+            wish = self.__dbCallGetWishById(id)
             wish.markFulfilled(giver)
             db.session.commit()
 
     def reopenGift(self, id):
         with app.app_context():
-            wish = db.session.scalars(select(Wish).where(Wish.id == id)).first()
+            wish = self.__dbCallGetWishById(id)
             wish.reopen()
             db.session.commit()
+
+    def __dbCallGetWishById(self, wishId):
+        """
+        Get a wish from the db by it's ID.
+        Only works if called within the app.app_context().
+
+        Args:
+            wishId (int): ID of the wish
+
+        Raises:
+            WishNotFoundError: Is raised if there is no wish with that ID in the DB.
+
+        Returns:
+            wish with the given ID
+        """
+        wish = db.session.scalars(select(Wish).where(Wish.id == wishId)).first()
+        if wish == None:
+            raise WishNotFoundError(wishId=wishId)
+        return wish
 
 
 class Wish(db.Model):
@@ -104,6 +123,14 @@ class Wish(db.Model):
     def reopen(self):
         self.giver = ''
         self.secret = ''
+
+class WishNotFoundError(ValueError):
+    def __init__(self, wishId, *args):
+        super().__init__(args)
+        self.wishId = wishId
+
+    def __str__(self):
+        return f'There is no wish with ID {self.wishId}.'
 
 class SecretMismatchError(ValueError):
     def __init__(self, *args):

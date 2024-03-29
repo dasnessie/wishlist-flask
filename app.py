@@ -22,7 +22,7 @@ setDefaultConfigValues(app)
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-from wishes import Wishlist, SecretMismatchError, WishFulfilledError
+from wishes import Wishlist, SecretMismatchError, WishFulfilledError, WishNotFoundError
 
 with app.app_context():
     db.create_all()
@@ -55,34 +55,44 @@ def noSpoilerView():
 
 @app.route("/gift<int:id>", methods=["GET"])
 def giftView(id):
-    wish = wishlist.getWishByID(id)
+    try:
+        wish = wishlist.getWishByID(id)
+    except WishNotFoundError as e:
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage=str(e)), 404
     if wish.isFulfilled():
         return render_template('wish_already_fulfilled.html', ownerName=app.config['OWNER_NAME'])
-    return render_template('gift.html', ownerName=app.config['OWNER_NAME'], wishTitle=wishlist.getWishByID(id).title)
+    return render_template('gift.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title)
 
 @app.route("/gift<int:id>", methods=["POST"])
 def giftFormSubmit(id):
     giver = request.form['user_nickname']
     try:
-        wishlist.markFulfilled(id, giver)
-    except WishFulfilledError:
-        return render_template('wish_already_fulfilled.html', ownerName=app.config['OWNER_NAME'])
-    secret = wishlist.getWishByID(id).secret
+        try:
+            wishlist.markFulfilled(id, giver)
+        except WishFulfilledError:
+            return render_template('wish_already_fulfilled.html', ownerName=app.config['OWNER_NAME'])
+        secret = wishlist.getWishByID(id).secret
+    except WishNotFoundError as e:
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage=str(e)), 404
     return redirect(url_for('thankYouView', id=id, secret=secret))
     # return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)
 
 @app.route("/gift<int:id>/<secret>", methods=["GET"])
 def thankYouView(id, secret):
-    wish = wishlist.getWishByID(id)
+    try:
+        wish = wishlist.getWishByID(id)
+    except WishNotFoundError as e:
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage=str(e)), 404
     if (wish.secret != secret):
         return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch."), 403
     return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title, url=request.url)
 
 @app.route("/gift<int:id>/<secret>", methods=["POST"])
 def undoGiftFulfillFormSubmit(id, secret):
-    wish = wishlist.getWishByID(id)
     try:
         wishlist.reopenGift(id)
     except SecretMismatchError:
         return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch."), 403
+    except WishNotFoundError as e:
+        return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage=str(e)), 404
     return redirect(url_for('listView'))
