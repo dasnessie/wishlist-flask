@@ -13,14 +13,18 @@
     {% endif %}
     {% for wish in orderedWishlist %}
         <article>
-            {% if wish.isFulfilled() and not noSpoiler %}<del>{% endif %}
+            {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}<del>{% endif %}
                 <h3>
                     {% if wish.link %}
                         <a href="{{ wish.link }}">{{ wish.title }}</a>
                     {% else %}
                         {{ wish.title }}
                     {% endif %}
-                    {% if wish.isFulfilled() and not noSpoiler %}(wird schon geschenkt){% endif %}
+                    {% if wish.isFulfilled() and (wish.hasMatchingSecretIn(userFulfilledWishes)) %}
+                        (schenkst du)
+                    {% elif wish.isFulfilled() and (not noSpoiler) %}
+                        (wird schon geschenkt)
+                    {% endif %}
                 </h3>
                 {% if wish.desc %}
                     <p>
@@ -32,12 +36,17 @@
                         <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                     </p>
                 {% endif %}
-                {% if not wish.isFulfilled() or noSpoiler %}
+                {% if (not wish.isFulfilled()) or (noSpoiler and (not (wish.hasMatchingSecretIn(userFulfilledWishes)))) %}
                     <p>
-                    <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
+                        <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
                     </p>
                 {% endif %}
-            {% if wish.isFulfilled() and not noSpoiler %}</del>{% endif %}
+            {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}</del>{% endif %}
+            {% if wish.hasMatchingSecretIn(userFulfilledWishes) %}
+                <p>
+                    <a class="reopen-button" href="/gift{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
+                </p>
+            {% endif %}
         </article>
     {% endfor %}
 {% endblock %}

@@ -35,10 +35,13 @@ class Wishlist:
             ).all()
         return wishes
 
-    def getPriorityOrderedWishesNoSpoiler(self):
+    def getPriorityOrderedWishesNoSpoiler(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
-                select(Wish).order_by(Wish.priority.desc())
+                select(Wish).order_by(
+                    (Wish.secret.in_(giftedWishSecrets)),
+                    Wish.priority.desc(),
+                )
             ).all()
         return wishes
 
@@ -161,6 +164,9 @@ class Wish(db.Model):
     def reopen(self):
         self.giver = ""
         self.secret = ""
+
+    def hasMatchingSecretIn(self, secrets):
+        return self.secret in secrets
 
 
 class WishNotFoundError(ValueError):

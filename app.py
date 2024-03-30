@@ -1,4 +1,4 @@
-from utils import setDefaultConfigValues
+from utils import setDefaultConfigValues, getFulfilledWishes
 
 from flask import Flask, render_template, request, make_response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -54,15 +54,15 @@ if len(wishlist.getPriorityOrderedWishes()) == 0:
 
 @app.route("/")
 def listView():
-    fulfilledWishes = request.cookies.get("fulfilledWishes")
-    fulfilledWishes = "" if fulfilledWishes == None else fulfilledWishes
+    fulfilledWishes = getFulfilledWishes(request)
     resp = make_response(
         render_template(
             "list.html",
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishes(
-                giftedWishSecrets=fulfilledWishes.split("&")
+                giftedWishSecrets=fulfilledWishes
             ),
+            userFulfilledWishes=fulfilledWishes,
         )
     )
     if request.args.get("yesSpoiler") == "1":
@@ -79,13 +79,17 @@ def noSpoilerRedirect():
 
 @app.route("/noSpoiler")
 def noSpoilerView():
+    fulfilledWishes = getFulfilledWishes(request)
     resp = make_response(
         render_template(
             "list.html",
             ownerName=app.config["OWNER_NAME"],
-            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(
+                giftedWishSecrets=fulfilledWishes
+            ),
             noSpoiler=True,
             stats=wishlist.getStats(),
+            userFulfilledWishes=fulfilledWishes,
         )
     )
     resp.set_cookie("noSpoiler", "1")
