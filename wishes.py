@@ -5,36 +5,48 @@ from uuid import uuid4
 
 from app import db, app
 
+
 class Wishlist:
     def __init__(self):
         self.db = db
-    
-    def addWish(self, title:str, priority:int, desc:str = '', link:str = '', endless:bool = False ,giver:str = '', secret:str = ''):
+
+    def addWish(
+        self,
+        title: str,
+        priority: int,
+        desc: str = "",
+        link: str = "",
+        endless: bool = False,
+        giver: str = "",
+        secret: str = "",
+    ):
         with app.app_context():
             db.session.add(Wish(title, priority, desc, link, endless, giver, secret))
             db.session.commit()
 
-    def getPriorityOrderedWishes(self, giftedWishSecrets = []):
+    def getPriorityOrderedWishes(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
                 select(Wish).order_by(
-                    (Wish.giver == '').desc(), 
-                    (Wish.secret.in_(giftedWishSecrets)).desc(), 
-                    Wish.priority.desc()
+                    (Wish.giver == "").desc(),
+                    (Wish.secret.in_(giftedWishSecrets)).desc(),
+                    Wish.priority.desc(),
                 )
             ).all()
         return wishes
 
     def getPriorityOrderedWishesNoSpoiler(self):
         with app.app_context():
-            wishes = db.session.scalars(select(Wish).order_by(Wish.priority.desc())).all()
+            wishes = db.session.scalars(
+                select(Wish).order_by(Wish.priority.desc())
+            ).all()
         return wishes
-    
+
     def getStats(self):
         with app.app_context():
             stats = {}
-            stats['count'] = db.session.query(Wish).count()
-            stats['fulfilled'] = db.session.query(Wish).filter(Wish.giver != '').count()
+            stats["count"] = db.session.query(Wish).count()
+            stats["fulfilled"] = db.session.query(Wish).filter(Wish.giver != "").count()
         return stats
 
     def getWishByID(self, id):
@@ -44,9 +56,7 @@ class Wishlist:
 
     def getWishBySecret(self, secret):
         with app.app_context():
-            wish = db.session.scalars(
-                select(Wish).where(Wish.secret == secret)
-            ).first()
+            wish = db.session.scalars(select(Wish).where(Wish.secret == secret)).first()
             if wish == None:
                 raise WishNotFoundError(wishId=secret)
         return wish
@@ -97,9 +107,18 @@ class Wish(db.Model):
     link: Mapped[str]
     endless: Mapped[bool]
     giver: Mapped[str]
-    secret: Mapped[str] # = mapped_column(unique=True)
+    secret: Mapped[str]  # = mapped_column(unique=True)
 
-    def __init__(self, title:str, priority:int, desc:str = '', link:str = '', endless:bool = False ,giver:str = '', secret:str = ''):
+    def __init__(
+        self,
+        title: str,
+        priority: int,
+        desc: str = "",
+        link: str = "",
+        endless: bool = False,
+        giver: str = "",
+        secret: str = "",
+    ):
         """
         Args:
             title (str): title of the wish
@@ -131,17 +150,18 @@ class Wish(db.Model):
         return domain
 
     def isFulfilled(self):
-        return self.giver != ''
+        return self.giver != ""
 
-    def markFulfilled(self, giver:str):
+    def markFulfilled(self, giver: str):
         if self.isFulfilled():
             raise WishFulfilledError()
         self.giver = giver
         self.secret = uuid4().hex
 
     def reopen(self):
-        self.giver = ''
-        self.secret = ''
+        self.giver = ""
+        self.secret = ""
+
 
 class WishNotFoundError(ValueError):
     def __init__(self, wishId, *args):
@@ -149,18 +169,20 @@ class WishNotFoundError(ValueError):
         self.wishId = wishId
 
     def __str__(self):
-        return f'There is no wish with ID {self.wishId}.'
+        return f"There is no wish with ID {self.wishId}."
+
 
 class SecretMismatchError(ValueError):
     def __init__(self, *args):
         super().__init__(args)
 
     def __str__(self):
-        return f'The given secret does not match the wishes secret!'
+        return f"The given secret does not match the wishes secret!"
+
 
 class WishFulfilledError(ValueError):
     def __init__(self, *args):
         super().__init__(args)
 
     def __str__(self):
-        return f'The wish is already fulfilled!'
+        return f"The wish is already fulfilled!"
