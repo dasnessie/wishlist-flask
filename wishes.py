@@ -14,9 +14,15 @@ class Wishlist:
             db.session.add(Wish(title, priority, desc, link, endless, giver, secret))
             db.session.commit()
 
-    def getPriorityOrderedWishes(self):
+    def getPriorityOrderedWishes(self, giftedWishSecrets = []):
         with app.app_context():
-            wishes = db.session.scalars(select(Wish).order_by((Wish.giver=='').desc(), Wish.priority.desc())).all()
+            wishes = db.session.scalars(
+                select(Wish).order_by(
+                    (Wish.giver == '').desc(), 
+                    (Wish.secret.in_(giftedWishSecrets)).desc(), 
+                    Wish.priority.desc()
+                )
+            ).all()
         return wishes
 
     def getPriorityOrderedWishesNoSpoiler(self):
@@ -35,6 +41,19 @@ class Wishlist:
         with app.app_context():
             wish = self.__dbCallGetWishById(id)
         return wish
+
+    def getWishBySecret(self, secret):
+        with app.app_context():
+            wish = db.session.scalars(
+                select(Wish).where(Wish.secret == secret)
+            ).first()
+            if wish == None:
+                raise WishNotFoundError(wishId=secret)
+        return wish
+
+    def getIDBySecret(self, secret):
+        id = self.getWishBySecret(secret).id
+        return id
 
     def markFulfilled(self, id, giver):
         with app.app_context():
@@ -115,7 +134,7 @@ class Wish(db.Model):
         return self.giver != ''
 
     def markFulfilled(self, giver:str):
-        if self.isFulfilled:
+        if self.isFulfilled():
             raise WishFulfilledError()
         self.giver = giver
         self.secret = uuid4().hex

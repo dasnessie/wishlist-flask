@@ -36,7 +36,15 @@ if len(wishlist.getPriorityOrderedWishes()) == 0:
 
 @app.route("/")
 def listView():
-    resp = make_response(render_template('list.html', ownerName=app.config['OWNER_NAME'], orderedWishlist=wishlist.getPriorityOrderedWishes()))
+    fulfilledWishes = request.cookies.get('fulfilledWishes')
+    fulfilledWishes = '' if fulfilledWishes == None else fulfilledWishes
+    resp = make_response(render_template(
+        'list.html', 
+        ownerName = app.config['OWNER_NAME'], 
+        orderedWishlist = wishlist.getPriorityOrderedWishes(
+            giftedWishSecrets = fulfilledWishes.split('&')
+        )
+    ))
     if request.args.get('yesSpoiler') == '1':
         resp.delete_cookie('noSpoiler')
     elif request.cookies.get('noSpoiler') == '1':
@@ -85,7 +93,13 @@ def thankYouView(id, secret):
         return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage=str(e)), 404
     if (wish.secret != secret):
         return render_template('invalid_url.html', ownerName=app.config['OWNER_NAME'], errorMessage = "Das angegebene Secret passt nicht zum Wunsch."), 403
-    return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title, url=request.url)
+    resp = make_response(render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], wishTitle=wish.title, url=request.url))
+    cookieValue = request.cookies.get('fulfilledWishes')
+    if cookieValue in [None, '']:
+        resp.set_cookie('fulfilledWishes', secret)
+    else:
+        resp.set_cookie('fulfilledWishes', '&'.join([cookieValue, secret]))
+    return resp
 
 @app.route("/gift<int:id>/<secret>", methods=["POST"])
 def undoGiftFulfillFormSubmit(id, secret):
