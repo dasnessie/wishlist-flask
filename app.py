@@ -203,3 +203,29 @@ def undoGiftFulfillFormSubmit(id, secret):
             404,
         )
     return redirect(url_for("listView"))
+
+
+@app.route("/admin", methods=["GET"])
+def adminView():
+    return render_template(
+        "admin.html",
+        ownerName=app.config["OWNER_NAME"],
+        orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+        stats=wishlist.getStats(),
+    )
+
+
+@app.route("/admin", methods=["POST"])
+def adminFormSubmit():
+    # TODO: Check if user is logged in as admin!
+
+    if request.form["action"] == "delete":
+        wishlist.delWish(id=request.form["wishId"])
+        return render_template(
+            "admin.html",
+            ownerName=app.config["OWNER_NAME"],
+            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+            stats=wishlist.getStats(),
+            message="Wunsch erfolgreich gelöscht!",
+        )
+    return redirect(url_for("adminView"))

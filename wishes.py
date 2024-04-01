@@ -24,6 +24,17 @@ class Wishlist:
             db.session.add(Wish(title, priority, desc, link, endless, giver, secret))
             db.session.commit()
 
+    def delWish(self, id="", secret=""):
+        if id:
+            wish = self.getWishByID(id)
+        elif secret:
+            wish = self.getWishBySecret(secret)
+        else:
+            raise AttributeError("Need to give wish id or secret!")
+
+        db.session.delete(wish)
+        db.session.commit()
+
     def getPriorityOrderedWishes(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
