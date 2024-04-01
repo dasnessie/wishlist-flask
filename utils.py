@@ -9,6 +9,7 @@ def setDefaultConfigValues(app):
 
 def getFulfilledWishes(request):
     fulfilledWishes = request.cookies.get("fulfilledWishes")
-    fulfilledWishes = "" if fulfilledWishes == None else fulfilledWishes
+    if fulfilledWishes in [None, ""]:
+        return set()
     fulfilledWishes = set(fulfilledWishes.split("&"))
     return fulfilledWishes
