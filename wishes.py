@@ -19,26 +19,41 @@ class Wishlist:
         endless: bool = False,
         giver: str = "",
         secret: str = "",
+        deleted: bool = False,
     ):
         with app.app_context():
-            db.session.add(Wish(title, priority, desc, link, endless, giver, secret))
+            db.session.add(
+                Wish(
+                    title,
+                    priority,
+                    desc=desc,
+                    link=link,
+                    endless=endless,
+                    giver=giver,
+                    secret=secret,
+                    deleted=deleted,
+                )
+            )
             db.session.commit()
 
     def delWish(self, id="", secret=""):
-        if id:
-            wish = self.getWishByID(id)
-        elif secret:
-            wish = self.getWishBySecret(secret)
-        else:
-            raise AttributeError("Need to give wish id or secret!")
+        with app.app_context():
+            if secret:
+                id = self.getIDBySecret(secret)
+            elif not id:
+                raise AttributeError("Need to give wish id or secret!")
+            else:
+                wish = self.__dbCallGetWishById(id)
 
-        db.session.delete(wish)
-        db.session.commit()
+            wish.delete()
+            db.session.commit()
 
     def getPriorityOrderedWishes(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
-                select(Wish).order_by(
+                select(Wish)
+                .where(Wish.deleted == False)
+                .order_by(
                     (Wish.giver == "").desc(),
                     (Wish.secret.in_(giftedWishSecrets)).desc(),
                     Wish.priority.desc(),
@@ -49,7 +64,9 @@ class Wishlist:
     def getPriorityOrderedWishesNoSpoiler(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
-                select(Wish).order_by(
+                select(Wish)
+                .where(Wish.deleted == False)
+                .order_by(
                     (Wish.secret.in_(giftedWishSecrets)),
                     Wish.priority.desc(),
                 )
@@ -122,6 +139,7 @@ class Wish(db.Model):
     endless: Mapped[bool]
     giver: Mapped[str]
     secret: Mapped[str]  # = mapped_column(unique=True)
+    deleted: Mapped[bool]
 
     def __init__(
         self,
@@ -132,6 +150,7 @@ class Wish(db.Model):
         endless: bool = False,
         giver: str = "",
         secret: str = "",
+        deleted: bool = False,
     ):
         """
         Args:
@@ -142,6 +161,7 @@ class Wish(db.Model):
             endless (bool, optional): If this is True, wish can not be marked as done. Defaults to False.
             giver (str, optional): Name of person gifting the thing. If empty, then wish still open. Defaults to ''.
             secret (str, optional): secret of link to mark wish as open again. Defaults to ''.
+            deleted (bool, optional): If wish is deleted
         """
         self.title = title
         if priority < 1 or priority > 5:
@@ -152,6 +172,7 @@ class Wish(db.Model):
         self.endless = endless
         self.giver = giver
         self.secret = secret
+        self.deleted = deleted
 
     def getLinkDomain(self):
         parsedLink = urlparse(self.link)
@@ -178,6 +199,9 @@ class Wish(db.Model):
 
     def hasMatchingSecretIn(self, secrets):
         return self.secret in secrets
+
+    def delete(self):
+        self.deleted = True
 
 
 class WishNotFoundError(ValueError):

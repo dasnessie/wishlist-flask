@@ -220,12 +220,13 @@ def adminFormSubmit():
     # TODO: Check if user is logged in as admin!
 
     if request.form["action"] == "delete":
-        wishlist.delWish(id=request.form["wishId"])
+        wishID = request.form["wishId"]
+        wishlist.delWish(id=wishID)
         return render_template(
             "admin.html",
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
-            message="Wunsch erfolgreich gelöscht!",
+            message=f'Wunsch "{wishlist.getWishByID(wishID).title}" erfolgreich gelöscht!',
         )
     return redirect(url_for("adminView"))
