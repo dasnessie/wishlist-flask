@@ -207,12 +207,16 @@ def undoGiftFulfillFormSubmit(id, secret):
 
 @app.route("/admin", methods=["GET"])
 def adminView():
-    return render_template(
-        "admin.html",
-        ownerName=app.config["OWNER_NAME"],
-        orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
-        stats=wishlist.getStats(),
+    resp = make_response(
+        render_template(
+            "admin.html",
+            ownerName=app.config["OWNER_NAME"],
+            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+            stats=wishlist.getStats(),
+        )
     )
+    resp.set_cookie("noSpoiler", "1")
+    return resp
 
 
 @app.route("/admin", methods=["POST"])
