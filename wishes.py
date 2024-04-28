@@ -2,6 +2,7 @@ from sqlalchemy import Integer, String, select
 from sqlalchemy.orm import Mapped, mapped_column
 from urllib.parse import urlparse
 from uuid import uuid4
+from datetime import datetime
 
 from app import db, app
 
@@ -19,7 +20,7 @@ class Wishlist:
         endless: bool = False,
         giver: str = "",
         secret: str = "",
-        deleted: bool = False,
+        deleted: datetime = None,
     ):
         with app.app_context():
             db.session.add(
@@ -139,7 +140,7 @@ class Wish(db.Model):
     endless: Mapped[bool]
     giver: Mapped[str]
     secret: Mapped[str]  # = mapped_column(unique=True)
-    deleted: Mapped[bool]
+    deleted: Mapped[datetime] = mapped_column(nullable=True)
 
     def __init__(
         self,
@@ -150,7 +151,7 @@ class Wish(db.Model):
         endless: bool = False,
         giver: str = "",
         secret: str = "",
-        deleted: bool = False,
+        deleted: datetime = None,
     ):
         """
         Args:
@@ -161,7 +162,7 @@ class Wish(db.Model):
             endless (bool, optional): If this is True, wish can not be marked as done. Defaults to False.
             giver (str, optional): Name of person gifting the thing. If empty, then wish still open. Defaults to ''.
             secret (str, optional): secret of link to mark wish as open again. Defaults to ''.
-            deleted (bool, optional): If wish is deleted
+            deleted (datetime, optional): If not none: time at which the wish was deleted (None if wish is not deleted)
         """
         self.title = title
         if priority < 1 or priority > 5:
@@ -201,7 +202,7 @@ class Wish(db.Model):
         return self.secret in secrets
 
     def delete(self):
-        self.deleted = True
+        self.deleted = datetime.now()
 
 
 class WishNotFoundError(ValueError):
