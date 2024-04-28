@@ -53,7 +53,7 @@ class Wishlist:
         with app.app_context():
             wishes = db.session.scalars(
                 select(Wish)
-                .where(Wish.deleted == False)
+                .where(Wish.deleted == None)
                 .order_by(
                     (Wish.giver == "").desc(),
                     (Wish.secret.in_(giftedWishSecrets)).desc(),
@@ -66,7 +66,7 @@ class Wishlist:
         with app.app_context():
             wishes = db.session.scalars(
                 select(Wish)
-                .where(Wish.deleted == False)
+                .where(Wish.deleted == None)
                 .order_by(
                     (Wish.secret.in_(giftedWishSecrets)),
                     Wish.priority.desc(),
@@ -77,8 +77,12 @@ class Wishlist:
     def getStats(self):
         with app.app_context():
             stats = {}
-            stats["count"] = db.session.query(Wish).count()
-            stats["fulfilled"] = db.session.query(Wish).filter(Wish.giver != "").count()
+            stats["count"] = db.session.query(Wish).filter(Wish.deleted == None).count()
+            stats["fulfilled"] = (
+                db.session.query(Wish)
+                .filter((Wish.deleted == None) & (Wish.giver != ""))
+                .count()
+            )
         return stats
 
     def getWishByID(self, id):
