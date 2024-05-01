@@ -213,6 +213,7 @@ def adminView():
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
+            orderedDeletedWishlist=wishlist.getDeletedWishes(),
         )
     )
     resp.set_cookie("noSpoiler", "1")
@@ -231,6 +232,21 @@ def adminFormSubmit():
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
+            orderedDeletedWishlist=wishlist.getDeletedWishes(),
             message=f'Wunsch "{wishlist.getWishByID(wishID).title}" erfolgreich gelöscht!',
+            messageUndo={"action": "restore", "wishID": wishID},
+        )
+    elif request.form["action"] == "restore":
+        wishID = request.form["wishId"]
+        wishlist.undelWish(id=wishID)
+        deletedWishes = wishlist.getDeletedWishes()
+        return render_template(
+            "admin.html",
+            ownerName=app.config["OWNER_NAME"],
+            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+            stats=wishlist.getStats(),
+            orderedDeletedWishlist=wishlist.getDeletedWishes(),
+            message=f'Wunsch "{wishlist.getWishByID(wishID).title}" wurde wiederhergestellt.',
+            messageUndo={"action": "delete", "wishID": wishID},
         )
     return redirect(url_for("adminView"))

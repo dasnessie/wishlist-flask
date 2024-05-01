@@ -6,12 +6,20 @@
 {% block content %}
     <details>
         <summary>Stats</summary>
-        Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}
+        Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }} <br>
+        Gelöschte Wünsche: {{ stats['nrDeleted'] }}
     </details>
     {% if message %}
         <div class="message-card">
             <p>
                 {{ message }}
+                {% if messageUndo %}
+                <form class="undo-form" method="post">
+                    <input type="hidden" name="action" value="{{ messageUndo['action'] }}">
+                    <input type="hidden" name="wishId" value="{{ messageUndo['wishID'] }}">
+                    <input class="undo-button" type="submit" value="Rückgängig">
+                </form>
+                {% endif %}
             </p>
         </div>
     {% endif %}
@@ -56,4 +64,36 @@
                 </form>
         </article>
     {% endfor %}
+    <details>
+        <summary>Gelöschte Wünsche</summary>
+        {% for wish in orderedDeletedWishlist %}
+            <article>
+                <details>
+                    <summary>
+                        {{ wish.title }}
+                    </summary>
+                    {% if wish.desc %}
+                        <p>
+                            {{ wish.desc }}
+                        </p>
+                    {% endif %}
+                    {% if wish.link %}
+                        <p>
+                            <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                        </p>
+                    {% endif %}
+                </details>
+                <form method="post">
+                    <p>
+                        <input type="hidden" name="action" value="restore">
+                        <input type="hidden" name="wishId" value="{{ wish.id }}">
+                        <input class="restore-button" type="submit" value="Wunsch wiederherstellen">
+                    </p>
+                </form>
+                <p>
+                    <a class="edit-as-new-button" href="/addnew{{ wish.id }}">Wunsch als neu bearbeiten</a>
+                </p>
+            </article>
+        {% endfor %}
+    </details>
 {% endblock %}

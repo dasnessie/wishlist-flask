@@ -49,6 +49,18 @@ class Wishlist:
             wish.delete()
             db.session.commit()
 
+    def undelWish(self, id="", secret=""):
+        with app.app_context():
+            if secret:
+                id = self.getIDBySecret(secret)
+            elif not id:
+                raise AttributeError("Need to give wish id or secret!")
+            else:
+                wish = self.__dbCallGetWishById(id)
+
+            wish.undelete()
+            db.session.commit()
+
     def getPriorityOrderedWishes(self, giftedWishSecrets=[]):
         with app.app_context():
             wishes = db.session.scalars(
@@ -74,6 +86,13 @@ class Wishlist:
             ).all()
         return wishes
 
+    def getDeletedWishes(self):
+        with app.app_context():
+            wishes = db.session.scalars(
+                select(Wish).where(Wish.deleted != None).order_by(Wish.deleted.desc())
+            ).all()
+        return wishes
+
     def getStats(self):
         with app.app_context():
             stats = {}
@@ -82,6 +101,9 @@ class Wishlist:
                 db.session.query(Wish)
                 .filter((Wish.deleted == None) & (Wish.giver != ""))
                 .count()
+            )
+            stats["nrDeleted"] = (
+                db.session.query(Wish).filter(Wish.deleted != None).count()
             )
         return stats
 
@@ -206,7 +228,11 @@ class Wish(db.Model):
         return self.secret in secrets
 
     def delete(self):
-        self.deleted = datetime.now()
+        if self.deleted == None:
+            self.deleted = datetime.now()
+
+    def undelete(self):
+        self.deleted = None
 
 
 class WishNotFoundError(ValueError):
