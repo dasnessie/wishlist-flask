@@ -20,7 +20,7 @@ class Wishlist:
         endless: bool = False,
         giver: str = "",
         secret: str = "",
-        deleted: datetime = None,
+        deleted: datetime | None = None,
     ):
         with app.app_context():
             db.session.add(
@@ -166,7 +166,7 @@ class Wish(db.Model):
     endless: Mapped[bool]
     giver: Mapped[str]
     secret: Mapped[str]  # = mapped_column(unique=True)
-    deleted: Mapped[datetime] = mapped_column(nullable=True)
+    deleted: Mapped[datetime | None] = mapped_column(nullable=True)
 
     def __init__(
         self,
@@ -177,7 +177,7 @@ class Wish(db.Model):
         endless: bool = False,
         giver: str = "",
         secret: str = "",
-        deleted: datetime = None,
+        deleted: datetime | None = None,
     ):
         """
         Args:

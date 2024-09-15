@@ -1,3 +1,4 @@
+import typing
 from utils import setDefaultConfigValues, getFulfilledWishes
 
 from flask import Flask, render_template, request, make_response, redirect, url_for
@@ -179,7 +180,9 @@ def thankYouView(id, secret):
     if cookieValue in [None, ""]:
         resp.set_cookie("fulfilledWishes", secret)
     else:
-        resp.set_cookie("fulfilledWishes", "&".join([cookieValue, secret]))
+        resp.set_cookie(
+            "fulfilledWishes", "&".join([typing.cast(str, cookieValue), secret])
+        )
     return resp
 
 
