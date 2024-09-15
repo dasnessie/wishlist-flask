@@ -1,0 +1,41 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block pagetitle %}{{ ownerName }}s Wunschzettel - {% endblock %}
+{% block header %}{{ ownerName }}s Wunschzettel{% endblock %}
+{% block content %}
+    <form class="edit-wish-form" method="post">
+        <div>
+            <label for="title">Wunschtitel:</label>
+            <input type="text" id="title" name="title" placeholder="Titel" autofocus="True" {% if template %}value="{{ template.title }}"{% endif %} required>
+        </div>
+
+        <details>
+            <summary>Schenker-Info</summary>
+            <label for="giver">Wird geschenkt von:</label>
+            <input type="text" id="giver" name="giver" placeholder="Schenker">
+        </details>
+
+        <div>
+            <label for="priority">Priorität (1-5):</label>
+            <input type="number" id="priority" name="priority" min="1" max="5" {% if template %}value="{{ template.priority }}"{% endif %} required>
+        </div>
+
+        <div>
+            <label for="link">Link:</label>
+            <input type="url" id="link" name="link" placeholder="https://" {% if template %}value="{{ template.link }}"{% endif %}>
+        </div>
+
+        <div>
+            <label for="desc">Beschreibung:</label>
+            <textarea id="desc" name="desc" placeholder="Ich wünsche mir…">{% if template %}{{ template.desc }}{% endif %}</textarea>
+        </div>
+
+        <div>
+            <input type="checkbox" id="endless" name="endless" {% if template %}{% if template.endless %}checked{% endif %}{% endif %}>
+            <label for="endless">Unendlich viele gewünscht</label>
+        </div>
+
+        <input class="save-wish-button" type="submit" value="Wunsch speichern">
+    </form>
+{% endblock %}

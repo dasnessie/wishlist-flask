@@ -190,9 +190,11 @@ class Wish(db.Model):
             secret (str, optional): secret of link to mark wish as open again. Defaults to ''.
             deleted (datetime, optional): If not none: time at which the wish was deleted (None if wish is not deleted)
         """
-        self.title = title
+        if len(title.strip()) == 0:
+            raise ValueError("Title must not be empty.")
+        self.title = title.strip()
         if priority < 1 or priority > 5:
-            raise ValueError("priority must be between 1 and 5.")
+            raise ValueError("Priority must be between 1 and 5.")
         self.priority = priority
         self.desc = desc
         self.link = link

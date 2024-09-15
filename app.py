@@ -30,6 +30,9 @@ with app.app_context():
     db.create_all()
 
 wishlist = Wishlist()
+
+# DEBUG
+# TODO: Remove
 if len(wishlist.getPriorityOrderedWishes()) == 0:
     wishlist.addWish(
         "Shenanigans",
@@ -207,6 +210,7 @@ def undoGiftFulfillFormSubmit(id, secret):
 
 @app.route("/admin", methods=["GET"])
 def adminView():
+    # TODO: Check if user is logged in as admin!
     resp = make_response(
         render_template(
             "admin.html",
@@ -249,4 +253,40 @@ def adminFormSubmit():
             message=f'Wunsch "{wishlist.getWishByID(wishID).title}" wurde wiederhergestellt.',
             messageUndo={"action": "delete", "wishID": wishID},
         )
+    return redirect(url_for("adminView"))
+
+
+@app.route("/addWish", methods=["GET"])
+def addWishView():
+    # TODO: Check if user is logged in as admin!
+
+    template = None
+    if request.args.get("copy"):
+        try:
+            template = wishlist.getWishByID(request.args.get("copy"))
+        except WishNotFoundError:
+            pass
+
+    resp = make_response(
+        render_template(
+            "addWish.html",
+            ownerName=app.config["OWNER_NAME"],
+            template=template,
+        )
+    )
+    resp.set_cookie("noSpoiler", "1")
+    return resp
+
+
+@app.route("/addWish", methods=["POST"])
+def addWishFormSubmit():
+    # TODO: Check if user is logged in as admin!
+    wishlist.addWish(
+        title=request.form["title"],
+        priority=int(request.form["priority"]),
+        desc=request.form["desc"],
+        link=request.form["link"],
+        endless=("endless" in request.form),
+        giver=request.form["giver"],
+    )
     return redirect(url_for("adminView"))

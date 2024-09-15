@@ -23,6 +23,9 @@
             </p>
         </div>
     {% endif %}
+
+    <a href="/addWish">Neuen Wunsch hinzufügen</a>
+
     {% for wish in orderedWishlist %}
         <article>
                 <h3>
@@ -55,6 +58,7 @@
                         <input type="submit" value="Wunsch bearbeiten">
                     </p>
                 </form>
+                <a href="/addWish?copy={{ wish.id }}">Wunsch kopieren</a>
                 <form method="post">
                     <p>
                         <input type="hidden" name="action" value="delete">
@@ -91,7 +95,7 @@
                     </p>
                 </form>
                 <p>
-                    <a class="edit-as-new-button" href="/addnew{{ wish.id }}">Wunsch als neu bearbeiten</a>
+                    <a class="edit-as-new-button" href="/addWish?copy={{ wish.id }}"">Wunsch als neu bearbeiten</a>
                 </p>
             </article>
         {% endfor %}
