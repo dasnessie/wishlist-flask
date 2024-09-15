@@ -281,7 +281,7 @@ def addWishView():
     return resp
 
 
-@app.route("/addWish", methods=["POST"])
+@app.route("/admin/addWish", methods=["POST"])
 def addWishFormSubmit():
     # TODO: Check if user is logged in as admin!
     wishlist.addWish(
