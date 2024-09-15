@@ -78,9 +78,7 @@ def make_session_permanent():
 
 @app.route("/")
 def listView():
-    if request.args.get("yesSpoiler") == "1":
-        session[SESSION_NO_SPOILER] = False
-    elif session.get(SESSION_NO_SPOILER):
+    if session.get(SESSION_NO_SPOILER):
         return redirect(url_for("noSpoilerView"))
 
     return render_template(
@@ -91,6 +89,12 @@ def listView():
         ),
         userFulfilledWishes=session.get(SESSION_FULFILLED_WISHES, []),
     )
+
+
+@app.route("/yesSpoiler")
+def yesSpoiler():
+    session[SESSION_NO_SPOILER] = False
+    return redirect(url_for("listView"))
 
 
 # TODO remove once we have a general solution for wrongly cased routes (See #8)
