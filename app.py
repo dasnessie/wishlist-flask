@@ -1,7 +1,7 @@
 import typing
 from datetime import timedelta
 
-from utils import setDefaultConfigValues, getFulfilledWishes
+from utils import setDefaultConfigValues
 
 from flask import (
     Flask,
@@ -45,6 +45,7 @@ with app.app_context():
 wishlist = Wishlist()
 
 SESSION_NO_SPOILER = "noSpoiler"
+SESSION_FULFILLED_WISHES = "fulfilledWishes"
 
 # DEBUG
 # TODO: Remove
@@ -82,15 +83,13 @@ def listView():
     elif session[SESSION_NO_SPOILER]:
         return redirect(url_for("noSpoilerView"))
 
-    fulfilledWishes = getFulfilledWishes(request)
-
     return render_template(
         "list.html",
         ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishes(
-            giftedWishSecrets=fulfilledWishes
+            giftedWishSecrets=session.get(SESSION_FULFILLED_WISHES, [])
         ),
-        userFulfilledWishes=fulfilledWishes,
+        userFulfilledWishes=session.get(SESSION_FULFILLED_WISHES, []),
     )
 
 
@@ -102,17 +101,16 @@ def noSpoilerRedirect():
 
 @app.route("/noSpoiler")
 def noSpoilerView():
-    fulfilledWishes = getFulfilledWishes(request)
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "list.html",
         ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(
-            giftedWishSecrets=fulfilledWishes
+            giftedWishSecrets=session.get(SESSION_FULFILLED_WISHES, [])
         ),
         noSpoiler=True,
         stats=wishlist.getStats(),
-        userFulfilledWishes=fulfilledWishes,
+        userFulfilledWishes=session.get(SESSION_FULFILLED_WISHES, []),
     )
 
 
@@ -184,22 +182,19 @@ def thankYouView(id, secret):
             ),
             403,
         )
-    resp = make_response(
-        render_template(
-            "thank_you.html",
-            ownerName=app.config["OWNER_NAME"],
-            wishTitle=wish.title,
-            url=request.url,
-        )
+
+    if not session.get(SESSION_FULFILLED_WISHES):
+        session[SESSION_FULFILLED_WISHES] = []
+    fulfilledWishesSet = set(session[SESSION_FULFILLED_WISHES])
+    fulfilledWishesSet.add(secret)
+    session[SESSION_FULFILLED_WISHES] = list(fulfilledWishesSet)
+
+    return render_template(
+        "thank_you.html",
+        ownerName=app.config["OWNER_NAME"],
+        wishTitle=wish.title,
+        url=request.url,
     )
-    cookieValue = request.cookies.get("fulfilledWishes")
-    if cookieValue in [None, ""]:
-        resp.set_cookie("fulfilledWishes", secret)
-    else:
-        resp.set_cookie(
-            "fulfilledWishes", "&".join([typing.cast(str, cookieValue), secret])
-        )
-    return resp
 
 
 @app.route("/wishes/<int:id>/<secret>", methods=["POST"])
