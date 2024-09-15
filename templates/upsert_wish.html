@@ -13,7 +13,7 @@
         <details>
             <summary>Schenker-Info</summary>
             <label for="giver">Wird geschenkt von:</label>
-            <input type="text" id="giver" name="giver" placeholder="Schenker">
+            <input type="text" id="giver" name="giver" placeholder="Schenker" {% if template %}value="{{ template.giver }}"{% endif %}>
         </details>
 
         <div>
