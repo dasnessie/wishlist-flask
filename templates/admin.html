@@ -53,12 +53,10 @@
                         <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                     </p>
                 {% endif %}
-                <form method="post">
-                    <p>
-                        <input type="submit" value="Wunsch bearbeiten">
-                    </p>
-                </form>
-                <a href="/admin/addWish?copy={{ wish.id }}">Wunsch kopieren</a>
+                <p>
+                    <a href="/admin/editWish/{{ wish.id }}">Wunsch bearbeiten</a>
+                    <a href="/admin/addWish?copy={{ wish.id }}">Wunsch kopieren</a>
+                </p>
                 <form method="post">
                     <p>
                         <input type="hidden" name="action" value="delete">

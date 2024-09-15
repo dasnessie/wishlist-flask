@@ -272,7 +272,7 @@ def addWishView():
 
     resp = make_response(
         render_template(
-            "add_wish.html",
+            "upsert_wish.html",
             ownerName=app.config["OWNER_NAME"],
             template=template,
         )
@@ -285,6 +285,49 @@ def addWishView():
 def addWishFormSubmit():
     # TODO: Check if user is logged in as admin!
     wishlist.addWish(
+        title=request.form["title"],
+        priority=int(request.form["priority"]),
+        desc=request.form["desc"],
+        link=request.form["link"],
+        endless=("endless" in request.form),
+        giver=request.form["giver"],
+    )
+    return redirect(url_for("adminView"))
+
+
+@app.route("/admin/editWish/<int:id>", methods=["GET"])
+def editWishView(id):
+    # TODO: Check if user is logged in as admin!
+
+    try:
+        wish = wishlist.getWishByID(id)
+    except WishNotFoundError as e:
+        return (
+            render_template(
+                "invalid_url.html",
+                ownerName=app.config["OWNER_NAME"],
+                errorMessage=str(e),
+            ),
+            404,
+        )
+
+    resp = make_response(
+        render_template(
+            "upsert_wish.html",
+            ownerName=app.config["OWNER_NAME"],
+            template=wish,
+            update=True,
+        )
+    )
+    resp.set_cookie("noSpoiler", "1")
+    return resp
+
+
+@app.route("/admin/editWish/<int:id>", methods=["POST"])
+def editWishFormSubmit(id):
+    # TODO: Check if user is logged in as admin!
+    wishlist.modifyWish(
+        id=id,
         title=request.form["title"],
         priority=int(request.form["priority"]),
         desc=request.form["desc"],

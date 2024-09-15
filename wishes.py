@@ -37,6 +37,33 @@ class Wishlist:
             )
             db.session.commit()
 
+    def modifyWish(
+        self,
+        id: int,
+        *,
+        title: str | None,
+        priority: int | None,
+        desc: str | None,
+        link: str | None,
+        endless: bool | None,
+        giver: str | None,
+    ):
+        with app.app_context():
+            wish = self.__dbCallGetWishById(id)
+            if title is not None:
+                wish.title = title
+            if priority is not None:
+                wish.priority = priority
+            if desc is not None:
+                wish.desc = desc
+            if link is not None:
+                wish.link = link
+            if endless is not None:
+                wish.endless = endless
+            if giver is not None:
+                wish.giver = giver
+            db.session.commit()
+
     def delWish(self, id="", secret=""):
         with app.app_context():
             if secret:
