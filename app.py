@@ -80,7 +80,7 @@ def make_session_permanent():
 def listView():
     if request.args.get("yesSpoiler") == "1":
         session[SESSION_NO_SPOILER] = False
-    elif session[SESSION_NO_SPOILER]:
+    elif session.get(SESSION_NO_SPOILER):
         return redirect(url_for("noSpoilerView"))
 
     return render_template(
