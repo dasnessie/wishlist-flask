@@ -38,13 +38,13 @@
                 {% endif %}
                 {% if (not wish.isFulfilled()) or (noSpoiler and (not (wish.hasMatchingSecretIn(userFulfilledWishes)))) %}
                     <p>
-                        <a class="fulfill-button" href="/gift{{ wish.id }}">Das schenke ich!</a>
+                        <a class="fulfill-button" href="/wish{{ wish.id }}">Das schenke ich!</a>
                     </p>
                 {% endif %}
             {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}</del>{% endif %}
             {% if wish.hasMatchingSecretIn(userFulfilledWishes) %}
                 <p>
-                    <a class="reopen-button" href="/gift{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
+                    <a class="reopen-button" href="/wish{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
                 </p>
             {% endif %}
         </article>

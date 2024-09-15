@@ -129,7 +129,7 @@ class Wishlist:
             wish.markFulfilled(giver)
             db.session.commit()
 
-    def reopenGift(self, id):
+    def reopenWish(self, id):
         with app.app_context():
             wish = self.__dbCallGetWishById(id)
             wish.reopen()

@@ -99,8 +99,8 @@ def noSpoilerView():
     return resp
 
 
-@app.route("/gift<int:id>", methods=["GET"])
-def giftView(id):
+@app.route("/wish<int:id>", methods=["GET"])
+def wishView(id):
     try:
         wish = wishlist.getWishByID(id)
     except WishNotFoundError as e:
@@ -117,12 +117,12 @@ def giftView(id):
             "wish_already_fulfilled.html", ownerName=app.config["OWNER_NAME"]
         )
     return render_template(
-        "gift.html", ownerName=app.config["OWNER_NAME"], wishTitle=wish.title
+        "wish.html", ownerName=app.config["OWNER_NAME"], wishTitle=wish.title
     )
 
 
-@app.route("/gift<int:id>", methods=["POST"])
-def giftFormSubmit(id):
+@app.route("/wish<int:id>", methods=["POST"])
+def wishFormSubmit(id):
     giver = request.form["user_nickname"]
     try:
         try:
@@ -142,10 +142,10 @@ def giftFormSubmit(id):
             404,
         )
     return redirect(url_for("thankYouView", id=id, secret=secret))
-    # return render_template('thankyou.html', ownerName=app.config['OWNER_NAME'], giver=giver)
+    # return render_template('thank_you.html', ownerName=app.config['OWNER_NAME'], giver=giver)
 
 
-@app.route("/gift<int:id>/<secret>", methods=["GET"])
+@app.route("/wish<int:id>/<secret>", methods=["GET"])
 def thankYouView(id, secret):
     try:
         wish = wishlist.getWishByID(id)
@@ -169,7 +169,7 @@ def thankYouView(id, secret):
         )
     resp = make_response(
         render_template(
-            "thankyou.html",
+            "thank_you.html",
             ownerName=app.config["OWNER_NAME"],
             wishTitle=wish.title,
             url=request.url,
@@ -183,10 +183,10 @@ def thankYouView(id, secret):
     return resp
 
 
-@app.route("/gift<int:id>/<secret>", methods=["POST"])
-def undoGiftFulfillFormSubmit(id, secret):
+@app.route("/wish<int:id>/<secret>", methods=["POST"])
+def undoWishFulfillFormSubmit(id, secret):
     try:
-        wishlist.reopenGift(id)
+        wishlist.reopenWish(id)
     except SecretMismatchError:
         return (
             render_template(
@@ -269,7 +269,7 @@ def addWishView():
 
     resp = make_response(
         render_template(
-            "addWish.html",
+            "add_wish.html",
             ownerName=app.config["OWNER_NAME"],
             template=template,
         )
