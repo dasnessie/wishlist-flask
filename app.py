@@ -76,6 +76,7 @@ def listView():
     return resp
 
 
+# TODO remove once we have a general solution for wrongly cased routes (See #8)
 @app.route("/nospoiler")
 def noSpoilerRedirect():
     return redirect(url_for("noSpoilerView"))
@@ -100,7 +101,7 @@ def noSpoilerView():
     return resp
 
 
-@app.route("/wish<int:id>", methods=["GET"])
+@app.route("/wishes/<int:id>", methods=["GET"])
 def wishView(id):
     try:
         wish = wishlist.getWishByID(id)
@@ -122,7 +123,7 @@ def wishView(id):
     )
 
 
-@app.route("/wish<int:id>", methods=["POST"])
+@app.route("/wishes/<int:id>", methods=["POST"])
 def wishFormSubmit(id):
     giver = request.form["user_nickname"]
     try:
@@ -146,7 +147,7 @@ def wishFormSubmit(id):
     # return render_template('thank_you.html', ownerName=app.config['OWNER_NAME'], giver=giver)
 
 
-@app.route("/wish<int:id>/<secret>", methods=["GET"])
+@app.route("/wishes/<int:id>/<secret>", methods=["GET"])
 def thankYouView(id, secret):
     try:
         wish = wishlist.getWishByID(id)
@@ -186,7 +187,7 @@ def thankYouView(id, secret):
     return resp
 
 
-@app.route("/wish<int:id>/<secret>", methods=["POST"])
+@app.route("/wishes/<int:id>/<secret>", methods=["POST"])
 def undoWishFulfillFormSubmit(id, secret):
     try:
         wishlist.reopenWish(id)
@@ -246,7 +247,6 @@ def adminFormSubmit():
     elif request.form["action"] == "restore":
         wishID = request.form["wishId"]
         wishlist.undelWish(id=wishID)
-        deletedWishes = wishlist.getDeletedWishes()
         return render_template(
             "admin.html",
             ownerName=app.config["OWNER_NAME"],
@@ -259,7 +259,7 @@ def adminFormSubmit():
     return redirect(url_for("adminView"))
 
 
-@app.route("/addWish", methods=["GET"])
+@app.route("/admin/addWish", methods=["GET"])
 def addWishView():
     # TODO: Check if user is logged in as admin!
 
