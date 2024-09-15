@@ -13,3 +13,6 @@ Features include:
 The following values can be set in `config/config.toml`:
 
 - `OWNER_NAME`: The name that should be displayed in the header. Defaults to "Jemand".
+- `SERVER_NAME`: Your server's host, e.g. `wishlist.example.com:3000`. Used to build the url to reopen wishes for your site visitors.
+- `PREFERRED_URL_SCHEME`: Your server's URL scheme, e.g. `https`. Used to build the url to reopen wishes for your site visitors.
+- `SECRET_KEY`: Secret key to encrypt the session data with. Please use your favorite password generator.

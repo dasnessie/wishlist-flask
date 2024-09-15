@@ -1,7 +1,17 @@
 import typing
+from datetime import timedelta
+
 from utils import setDefaultConfigValues, getFulfilledWishes
 
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    make_response,
+    redirect,
+    url_for,
+    session,
+)
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
@@ -14,6 +24,8 @@ class Base(DeclarativeBase):
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wishes.sqlite3"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(weeks=52 * 4)
+
 
 try:
     app.config.from_file("config/config.toml", load=tomllib.load, text=False)
@@ -31,6 +43,8 @@ with app.app_context():
     db.create_all()
 
 wishlist = Wishlist()
+
+SESSION_NO_SPOILER = "noSpoiler"
 
 # DEBUG
 # TODO: Remove
@@ -56,24 +70,28 @@ if len(wishlist.getPriorityOrderedWishes()) == 0:
     )
 
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
+
 @app.route("/")
 def listView():
-    fulfilledWishes = getFulfilledWishes(request)
-    resp = make_response(
-        render_template(
-            "list.html",
-            ownerName=app.config["OWNER_NAME"],
-            orderedWishlist=wishlist.getPriorityOrderedWishes(
-                giftedWishSecrets=fulfilledWishes
-            ),
-            userFulfilledWishes=fulfilledWishes,
-        )
-    )
     if request.args.get("yesSpoiler") == "1":
-        resp.delete_cookie("noSpoiler")
-    elif request.cookies.get("noSpoiler") == "1":
+        session[SESSION_NO_SPOILER] = False
+    elif session[SESSION_NO_SPOILER]:
         return redirect(url_for("noSpoilerView"))
-    return resp
+
+    fulfilledWishes = getFulfilledWishes(request)
+
+    return render_template(
+        "list.html",
+        ownerName=app.config["OWNER_NAME"],
+        orderedWishlist=wishlist.getPriorityOrderedWishes(
+            giftedWishSecrets=fulfilledWishes
+        ),
+        userFulfilledWishes=fulfilledWishes,
+    )
 
 
 # TODO remove once we have a general solution for wrongly cased routes (See #8)
@@ -85,20 +103,17 @@ def noSpoilerRedirect():
 @app.route("/noSpoiler")
 def noSpoilerView():
     fulfilledWishes = getFulfilledWishes(request)
-    resp = make_response(
-        render_template(
-            "list.html",
-            ownerName=app.config["OWNER_NAME"],
-            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(
-                giftedWishSecrets=fulfilledWishes
-            ),
-            noSpoiler=True,
-            stats=wishlist.getStats(),
-            userFulfilledWishes=fulfilledWishes,
-        )
+    session[SESSION_NO_SPOILER] = True
+    return render_template(
+        "list.html",
+        ownerName=app.config["OWNER_NAME"],
+        orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(
+            giftedWishSecrets=fulfilledWishes
+        ),
+        noSpoiler=True,
+        stats=wishlist.getStats(),
+        userFulfilledWishes=fulfilledWishes,
     )
-    resp.set_cookie("noSpoiler", "1")
-    return resp
 
 
 @app.route("/wishes/<int:id>", methods=["GET"])
@@ -215,17 +230,14 @@ def undoWishFulfillFormSubmit(id, secret):
 @app.route("/admin", methods=["GET"])
 def adminView():
     # TODO: Check if user is logged in as admin!
-    resp = make_response(
-        render_template(
-            "admin.html",
-            ownerName=app.config["OWNER_NAME"],
-            orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
-            stats=wishlist.getStats(),
-            orderedDeletedWishlist=wishlist.getDeletedWishes(),
-        )
+    session[SESSION_NO_SPOILER] = True
+    return render_template(
+        "admin.html",
+        ownerName=app.config["OWNER_NAME"],
+        orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
+        stats=wishlist.getStats(),
+        orderedDeletedWishlist=wishlist.getDeletedWishes(),
     )
-    resp.set_cookie("noSpoiler", "1")
-    return resp
 
 
 @app.route("/admin", methods=["POST"])
@@ -270,15 +282,13 @@ def addWishView():
         except WishNotFoundError:
             pass
 
-    resp = make_response(
-        render_template(
-            "upsert_wish.html",
-            ownerName=app.config["OWNER_NAME"],
-            template=template,
-        )
+    session[SESSION_NO_SPOILER] = True
+
+    return render_template(
+        "upsert_wish.html",
+        ownerName=app.config["OWNER_NAME"],
+        template=template,
     )
-    resp.set_cookie("noSpoiler", "1")
-    return resp
 
 
 @app.route("/admin/addWish", methods=["POST"])
@@ -311,16 +321,14 @@ def editWishView(id):
             404,
         )
 
-    resp = make_response(
-        render_template(
-            "upsert_wish.html",
-            ownerName=app.config["OWNER_NAME"],
-            template=wish,
-            update=True,
-        )
+    session[SESSION_NO_SPOILER] = True
+
+    return render_template(
+        "upsert_wish.html",
+        ownerName=app.config["OWNER_NAME"],
+        template=wish,
+        update=True,
     )
-    resp.set_cookie("noSpoiler", "1")
-    return resp
 
 
 @app.route("/admin/editWish/<int:id>", methods=["POST"])
