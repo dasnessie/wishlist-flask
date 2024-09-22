@@ -241,9 +241,10 @@ def undoWishFulfillFormSubmit(id, secret):
     return redirect(url_for("listView"))
 
 
-@app.route(f"""/{app.config["ADMIN_SECRET"]}""", methods=["GET"])
-def loginView():
-    session[SESSION_IS_LOGGED_IN] = True
+@app.route("/login/<secret>", methods=["GET"])
+def loginView(secret):
+    if secret == app.config["ADMIN_SECRET"]:
+        session[SESSION_IS_LOGGED_IN] = True
     return redirect(url_for("adminView"))
 
 
@@ -253,7 +254,7 @@ def adminView():
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "admin.html",
-        loginLink=url_for("loginView"),
+        loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
         ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
         stats=wishlist.getStats(),
@@ -270,7 +271,7 @@ def adminFormSubmit():
         wishlist.delWish(id=wishID)
         return render_template(
             "admin.html",
-            loginLink=url_for("loginView"),
+            loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
@@ -284,7 +285,7 @@ def adminFormSubmit():
         wishlist.undelWish(id=wishID)
         return render_template(
             "admin.html",
-            loginLink=url_for("loginView"),
+            loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
@@ -293,6 +294,16 @@ def adminFormSubmit():
             messageUndo={"action": "delete", "wishID": wishID},
             loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
+    elif request.form["action"] == "regenerateAdminLink":
+        try:
+            with open("config/config.toml", "rb") as f:
+                configFileContents = tomllib.load(f)
+        except FileNotFoundError:
+            configFileContents = {}
+        configFileContents["ADMIN_SECRET"] = str(uuid.uuid4())
+        with open("config/config.toml", "wb") as f:
+            tomli_w.dump(configFileContents, f)
+        app.config.from_mapping(configFileContents)
     return redirect(url_for("adminView"))
 
 

@@ -93,11 +93,17 @@
                     </p>
                 </form>
                 <p>
-                    <a class="edit-as-new-button" href="/addWish?copy={{ wish.id }}"">Wunsch als neu bearbeiten</a>
+                    <a class="edit-as-new-button" href="/addWish?copy={{ wish.id }}">Wunsch als neu bearbeiten</a>
                 </p>
             </article>
         {% endfor %}
     </details>
+    <form method="post">
+        <p>
+            <input type="hidden" name="action" value="regenerateAdminLink">
+            <input class="danger-button" type="submit" value="Neuen Admin-Link generieren">
+        </p>
+    </form>
 {% endblock %}
 
 {% block adminFooter %}
