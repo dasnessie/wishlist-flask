@@ -11,42 +11,46 @@
         Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}
     </details>
     {% endif %}
-    {% for wish in orderedWishlist %}
-        <article>
-            {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}<del>{% endif %}
-                <h3>
+    {% if orderedWishlist|length == 0 %}
+        <p>Dieser Wunschzettel ist leer!</p>
+    {% else %}
+        {% for wish in orderedWishlist %}
+            <article>
+                {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}<del>{% endif %}
+                    <h3>
+                        {% if wish.link %}
+                            <a href="{{ wish.link }}">{{ wish.title }}</a>
+                        {% else %}
+                            {{ wish.title }}
+                        {% endif %}
+                        {% if wish.isFulfilled() and (wish.hasMatchingSecretIn(userFulfilledWishes)) %}
+                            (schenkst du)
+                        {% elif wish.isFulfilled() and (not noSpoiler) %}
+                            (wird schon geschenkt)
+                        {% endif %}
+                    </h3>
+                    {% if wish.desc %}
+                        <p>
+                            {{ wish.desc }}
+                        </p>
+                    {% endif %}
                     {% if wish.link %}
-                        <a href="{{ wish.link }}">{{ wish.title }}</a>
-                    {% else %}
-                        {{ wish.title }}
+                        <p>
+                            <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                        </p>
                     {% endif %}
-                    {% if wish.isFulfilled() and (wish.hasMatchingSecretIn(userFulfilledWishes)) %}
-                        (schenkst du)
-                    {% elif wish.isFulfilled() and (not noSpoiler) %}
-                        (wird schon geschenkt)
+                    {% if (not wish.isFulfilled()) or (noSpoiler and (not (wish.hasMatchingSecretIn(userFulfilledWishes)))) %}
+                        <p>
+                            <a class="fulfill-button" href="/wishes/{{ wish.id }}">Das schenke ich!</a>
+                        </p>
                     {% endif %}
-                </h3>
-                {% if wish.desc %}
+                {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}</del>{% endif %}
+                {% if wish.hasMatchingSecretIn(userFulfilledWishes) %}
                     <p>
-                        {{ wish.desc }}
+                        <a class="reopen-button" href="/wishes/{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
                     </p>
                 {% endif %}
-                {% if wish.link %}
-                    <p>
-                        <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
-                    </p>
-                {% endif %}
-                {% if (not wish.isFulfilled()) or (noSpoiler and (not (wish.hasMatchingSecretIn(userFulfilledWishes)))) %}
-                    <p>
-                        <a class="fulfill-button" href="/wishes/{{ wish.id }}">Das schenke ich!</a>
-                    </p>
-                {% endif %}
-            {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}</del>{% endif %}
-            {% if wish.hasMatchingSecretIn(userFulfilledWishes) %}
-                <p>
-                    <a class="reopen-button" href="/wishes/{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
-                </p>
-            {% endif %}
-        </article>
-    {% endfor %}
+            </article>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
