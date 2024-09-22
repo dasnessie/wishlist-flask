@@ -1,7 +1,7 @@
 import typing
 from datetime import timedelta
 
-from utils import setDefaultConfigValues
+from utils import *
 
 from flask import (
     Flask,
@@ -122,14 +122,12 @@ def noSpoilerView():
 def wishView(id):
     try:
         wish = wishlist.getWishByID(id)
-    except WishNotFoundError as e:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage=str(e),
-            ),
-            404,
+    except WishNotFoundError:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Es gibt keinen Wunsch mit dieser ID.",
         )
     if wish.isFulfilled():
         return render_template(
@@ -151,14 +149,12 @@ def wishFormSubmit(id):
                 "wish_already_fulfilled.html", ownerName=app.config["OWNER_NAME"]
             )
         secret = wishlist.getWishByID(id).secret
-    except WishNotFoundError as e:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage=str(e),
-            ),
-            404,
+    except WishNotFoundError:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Es gibt keinen Wunsch mit dieser ID.",
         )
     return redirect(url_for("thankYouView", id=id, secret=secret))
     # return render_template('thank_you.html', ownerName=app.config['OWNER_NAME'], giver=giver)
@@ -168,23 +164,19 @@ def wishFormSubmit(id):
 def thankYouView(id, secret):
     try:
         wish = wishlist.getWishByID(id)
-    except WishNotFoundError as e:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage=str(e),
-            ),
-            404,
+    except WishNotFoundError:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Es gibt keinen Wunsch mit dieser ID.",
         )
     if wish.secret != secret:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage="Das angegebene Secret passt nicht zum Wunsch.",
-            ),
-            403,
+        return error(
+            app=app,
+            code=403,
+            title="Ungültige URL",
+            message="Das angegebene Secret passt nicht zum Wunsch.",
         )
 
     if not session.get(SESSION_FULFILLED_WISHES):
@@ -206,22 +198,18 @@ def undoWishFulfillFormSubmit(id, secret):
     try:
         wishlist.reopenWish(id)
     except SecretMismatchError:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage="Das angegebene Secret passt nicht zum Wunsch.",
-            ),
-            403,
+        return error(
+            app=app,
+            code=403,
+            title="Ungültige URL",
+            message="Das angegebene Secret passt nicht zum Wunsch.",
         )
-    except WishNotFoundError as e:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage=str(e),
-            ),
-            404,
+    except WishNotFoundError:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Es gibt keinen Wunsch mit dieser ID.",
         )
     return redirect(url_for("listView"))
 
@@ -310,14 +298,12 @@ def editWishView(id):
 
     try:
         wish = wishlist.getWishByID(id)
-    except WishNotFoundError as e:
-        return (
-            render_template(
-                "invalid_url.html",
-                ownerName=app.config["OWNER_NAME"],
-                errorMessage=str(e),
-            ),
-            404,
+    except WishNotFoundError:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Es gibt keinen Wunsch mit dieser ID.",
         )
 
     session[SESSION_NO_SPOILER] = True
