@@ -44,9 +44,6 @@ with app.app_context():
 
 wishlist = Wishlist()
 
-SESSION_NO_SPOILER = "noSpoiler"
-SESSION_FULFILLED_WISHES = "fulfilledWishes"
-
 # DEBUG
 # TODO: Remove
 if len(wishlist.getPriorityOrderedWishes()) == 0:
@@ -214,9 +211,15 @@ def undoWishFulfillFormSubmit(id, secret):
     return redirect(url_for("listView"))
 
 
+@app.route(f"""/{app.config["ADMIN_SECRET"]}""", methods=["GET"])
+def loginView():
+    session[SESSION_IS_LOGGED_IN] = True
+    return redirect(url_for("adminView"))
+
+
 @app.route("/admin", methods=["GET"])
+@admin(app)
 def adminView():
-    # TODO: Check if user is logged in as admin!
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "admin.html",
@@ -228,9 +231,8 @@ def adminView():
 
 
 @app.route("/admin", methods=["POST"])
+@admin(app)
 def adminFormSubmit():
-    # TODO: Check if user is logged in as admin!
-
     if request.form["action"] == "delete":
         wishID = request.form["wishId"]
         wishlist.delWish(id=wishID)
@@ -259,9 +261,8 @@ def adminFormSubmit():
 
 
 @app.route("/admin/addWish", methods=["GET"])
+@admin(app)
 def addWishView():
-    # TODO: Check if user is logged in as admin!
-
     template = None
     if request.args.get("copy"):
         try:
@@ -279,8 +280,8 @@ def addWishView():
 
 
 @app.route("/admin/addWish", methods=["POST"])
+@admin(app)
 def addWishFormSubmit():
-    # TODO: Check if user is logged in as admin!
     wishlist.addWish(
         title=request.form["title"],
         priority=int(request.form["priority"]),
@@ -293,9 +294,8 @@ def addWishFormSubmit():
 
 
 @app.route("/admin/editWish/<int:id>", methods=["GET"])
+@admin(app)
 def editWishView(id):
-    # TODO: Check if user is logged in as admin!
-
     try:
         wish = wishlist.getWishByID(id)
     except WishNotFoundError:
@@ -317,8 +317,8 @@ def editWishView(id):
 
 
 @app.route("/admin/editWish/<int:id>", methods=["POST"])
+@admin(app)
 def editWishFormSubmit(id):
-    # TODO: Check if user is logged in as admin!
     wishlist.modifyWish(
         id=id,
         title=request.form["title"],
