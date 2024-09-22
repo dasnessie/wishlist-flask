@@ -215,7 +215,7 @@ def thankYouView(id, secret):
         "thank_you.html",
         ownerName=app.config["OWNER_NAME"],
         wishTitle=wish.title,
-        url=request.url,
+        url=url_for("thankYouView", id=id, secret=secret, _external=True),
         loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
@@ -254,7 +254,9 @@ def adminView():
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "admin.html",
-        loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
+        loginLink=url_for(
+            "loginView", secret=app.config["ADMIN_SECRET"], _external=True
+        ),
         ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
         stats=wishlist.getStats(),
@@ -271,7 +273,9 @@ def adminFormSubmit():
         wishlist.delWish(id=wishID)
         return render_template(
             "admin.html",
-            loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
+            loginLink=url_for(
+                "loginView", secret=app.config["ADMIN_SECRET"], _external=True
+            ),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
@@ -285,7 +289,9 @@ def adminFormSubmit():
         wishlist.undelWish(id=wishID)
         return render_template(
             "admin.html",
-            loginLink=url_for("loginView", secret=app.config["ADMIN_SECRET"]),
+            loginLink=url_for(
+                "loginView", secret=app.config["ADMIN_SECRET"], _external=True
+            ),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
