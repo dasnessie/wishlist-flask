@@ -13,7 +13,10 @@ SESSION_IS_LOGGED_IN = "isLoggedIn"
 
 def setDefaultConfigValues(app):
     # Default config value dict
-    defaultConfig = {"OWNER_NAME": "Jemand"}
+    defaultConfig = {
+        "OWNER_NAME": "Jemand",
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///wishes.sqlite3",
+    }
     # for any key not already set, set the default value
     for key, value in defaultConfig.items():
         if key not in app.config:

@@ -1,5 +1,6 @@
 import typing
 from datetime import timedelta
+import warnings
 
 from utils import *
 
@@ -14,25 +15,47 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-
+import uuid
 import tomllib
+import tomli_w
+
+try:
+    with open("config/config.toml", "rb") as f:
+        configFileContents = tomllib.load(f)
+except FileNotFoundError:
+    configFileContents = {}
+
+writeConfig = False
+
+if not configFileContents.get("ADMIN_SECRET"):
+    configFileContents["ADMIN_SECRET"] = str(uuid.uuid4())
+    writeConfig = True
+
+if not configFileContents.get("SECRET_KEY"):
+    configFileContents["SECRET_KEY"] = str(uuid.uuid4())
+    writeConfig = True
+
+if writeConfig:
+    with open("config/config.toml", "wb") as f:
+        tomli_w.dump(configFileContents, f)
+
+
+app = Flask(__name__)
+app.config.from_mapping(configFileContents)
+setDefaultConfigValues(app)
+
+# We force a value here to make sure sessions persist when wishes are fulfilled
+if app.config.get("PERMANENT_SESSION_LIFETIME"):
+    warnings.warn(
+        "Ignored setting PERMANENT_SESSION_LIFETIME, this value is not configurable.",
+        RuntimeWarning,
+    )
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(weeks=52 * 4)
 
 
 class Base(DeclarativeBase):
     pass
 
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wishes.sqlite3"
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(weeks=52 * 4)
-
-
-try:
-    app.config.from_file("config/config.toml", load=tomllib.load, text=False)
-except FileNotFoundError:
-    pass
-
-setDefaultConfigValues(app)
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
