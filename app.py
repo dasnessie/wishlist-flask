@@ -134,6 +134,13 @@ def wishView(id):
             ownerName=app.config["OWNER_NAME"],
             loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
+    if wish.endless:
+        return render_template(
+            "wish_endless.html",
+            ownerName=app.config["OWNER_NAME"],
+            wishTitle=wish.title,
+            loggedIn=session.get(SESSION_IS_LOGGED_IN),
+        )
     return render_template(
         "wish.html",
         ownerName=app.config["OWNER_NAME"],
@@ -144,6 +151,8 @@ def wishView(id):
 
 @app.route("/wishes/<int:id>", methods=["POST"])
 def wishFormSubmit(id):
+    if wishlist.getWishByID(id).endless:
+        return redirect(url_for("listView"))
     giver = request.form["user_nickname"]
     try:
         try:
