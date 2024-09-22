@@ -332,3 +332,20 @@ form.inline {
     flex-shrink: 1;
   }
 }
+
+/* message card */
+.message-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+
+  background: var(--color-theme-light);
+  border: 1px solid var(--color-theme-medium);
+  padding: 1rem;
+  border-radius: var(--corner-radius-default);
+
+  .message {
+    flex-grow: 1;
+  }
+}

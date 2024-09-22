@@ -13,16 +13,14 @@
     </details>
     {% if message %}
         <div class="message-card">
-            <p>
-                {{ message }}
-                {% if messageUndo %}
-                <form class="undo-form" method="post">
-                    <input type="hidden" name="action" value="{{ messageUndo['action'] }}">
-                    <input type="hidden" name="wishId" value="{{ messageUndo['wishID'] }}">
-                    <input type="submit" value="Rückgängig">
-                </form>
-                {% endif %}
-            </p>
+            <span class="message">{{ message }}</span>
+            {% if messageUndo %}
+            <form method="post">
+                <input type="hidden" name="action" value="{{ messageUndo['action'] }}">
+                <input type="hidden" name="wishId" value="{{ messageUndo['wishID'] }}">
+                <input type="submit" value="Rückgängig">
+            </form>
+            {% endif %}
         </div>
     {% endif %}
 
