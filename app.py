@@ -223,6 +223,7 @@ def adminView():
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "admin.html",
+        loginLink=url_for("loginView"),
         ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
         stats=wishlist.getStats(),
@@ -238,6 +239,7 @@ def adminFormSubmit():
         wishlist.delWish(id=wishID)
         return render_template(
             "admin.html",
+            loginLink=url_for("loginView"),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
@@ -250,6 +252,7 @@ def adminFormSubmit():
         wishlist.undelWish(id=wishID)
         return render_template(
             "admin.html",
+            loginLink=url_for("loginView"),
             ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
