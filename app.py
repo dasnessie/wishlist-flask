@@ -245,7 +245,14 @@ def undoWishFulfillFormSubmit(id, secret):
 def loginView(secret):
     if secret == app.config["ADMIN_SECRET"]:
         session[SESSION_IS_LOGGED_IN] = True
-    return redirect(url_for("adminView"))
+        return redirect(url_for("adminView"))
+    else:
+        return error(
+            app=app,
+            code=404,
+            title="Ungültige URL",
+            message="Dieser Login-Link ist ungültig. Solltest du den Login-Link verloren haben, kannst du das Secret in deiner Config-Datei finden.",
+        )
 
 
 @app.route("/admin", methods=["GET"])
