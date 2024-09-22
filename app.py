@@ -108,7 +108,7 @@ def listView():
             giftedWishSecrets=session.get(SESSION_FULFILLED_WISHES, [])
         ),
         userFulfilledWishes=session.get(SESSION_FULFILLED_WISHES, []),
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -136,7 +136,7 @@ def noSpoilerView():
         noSpoiler=True,
         stats=wishlist.getStats(),
         userFulfilledWishes=session.get(SESSION_FULFILLED_WISHES, []),
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -155,13 +155,13 @@ def wishView(id):
         return render_template(
             "wish_already_fulfilled.html",
             ownerName=app.config["OWNER_NAME"],
-            loggedIn=session[SESSION_IS_LOGGED_IN],
+            loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
     return render_template(
         "wish.html",
         ownerName=app.config["OWNER_NAME"],
         wishTitle=wish.title,
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -216,7 +216,7 @@ def thankYouView(id, secret):
         ownerName=app.config["OWNER_NAME"],
         wishTitle=wish.title,
         url=request.url,
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -258,7 +258,7 @@ def adminView():
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
         stats=wishlist.getStats(),
         orderedDeletedWishlist=wishlist.getDeletedWishes(),
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -277,7 +277,7 @@ def adminFormSubmit():
             orderedDeletedWishlist=wishlist.getDeletedWishes(),
             message=f'Wunsch "{wishlist.getWishByID(wishID).title}" erfolgreich gelöscht!',
             messageUndo={"action": "restore", "wishID": wishID},
-            loggedIn=session[SESSION_IS_LOGGED_IN],
+            loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
     elif request.form["action"] == "restore":
         wishID = request.form["wishId"]
@@ -291,7 +291,7 @@ def adminFormSubmit():
             orderedDeletedWishlist=wishlist.getDeletedWishes(),
             message=f'Wunsch "{wishlist.getWishByID(wishID).title}" wurde wiederhergestellt.',
             messageUndo={"action": "delete", "wishID": wishID},
-            loggedIn=session[SESSION_IS_LOGGED_IN],
+            loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
     return redirect(url_for("adminView"))
 
@@ -312,7 +312,7 @@ def addWishView():
         "upsert_wish.html",
         ownerName=app.config["OWNER_NAME"],
         template=template,
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
@@ -350,7 +350,7 @@ def editWishView(id):
         ownerName=app.config["OWNER_NAME"],
         template=wish,
         update=True,
-        loggedIn=session[SESSION_IS_LOGGED_IN],
+        loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
 
 
