@@ -13,9 +13,10 @@
     </header>
     <div id="content">{% block content %}{% endblock %}</div>
     <footer>
-      {% block footer %}
-      Look at this amazing footer. Much wow.
-      {% endblock %}
+      {% block adminFooter %}{% endblock %}
+      {% if loggedIn %}
+      <a href="/admin/logout">Logout</a>
+      {% endif %}
     </footer>
   </body>
 </html>

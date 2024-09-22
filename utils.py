@@ -45,6 +45,7 @@ def error(app: Flask, code: int, title: str, message: str):
             ownerName=app.config["OWNER_NAME"],
             errorTitle=title,
             errorMessage=message,
+            loggedIn=session[SESSION_IS_LOGGED_IN],
         ),
         code,
     )
