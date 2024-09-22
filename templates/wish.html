@@ -4,16 +4,10 @@
 {% block content %}
     <h3>Du möchtest folgendes als erledigt markieren: {{ wishTitle }}</h3>
     <p>Bitte verrate mir noch deinen (Nick-) Namen. Ich werde ihn mir nur anschauen, wenn etwas schief läuft.</p>
-    <p>
-        <form method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="user_nickname" placeholder="Nickname" autofocus="True" required>
-
-            <p>
-                <input type="submit" value="Wunsch als erledigt markieren" aria-label="Folgendes als erledigt markieren: {{ wishTitle }}">
-            </p>
-
-        </form>
-    </p>
+    <form method="post" class="fulfill-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_nickname" placeholder="Nickname" autofocus="True" required>
+        <input type="submit" value="Wunsch als erledigt markieren" aria-label="Folgendes als erledigt markieren: {{ wishTitle }}">
+    </form>
     <p><a href="/">zurück zum Wunschzettel</a></p>
 {% endblock%}

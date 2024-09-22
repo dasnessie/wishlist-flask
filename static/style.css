@@ -1,0 +1,334 @@
+/* 
+ * CSS reset from https://www.joshwcomeau.com/css/custom-css-reset/ 
+ */
+
+/* 1. Use a more-intuitive box-sizing model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+* {
+  margin: 0;
+}
+
+/* Typographic tweaks!
+  3. Add accessible line-height
+  4. Improve text rendering */
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 5. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 6. Remove built-in form typography styles */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 7. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/*
+ * Global styles & variable
+ */
+
+:root {
+  /* System Fonts*/
+  --system-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+  --hue-theme: 216;
+
+  --color-background: white;
+  --color-text: hsl(0 0% 10%);
+  --color-theme: hsl(var(--hue-theme) 85% 30%);
+  --color-danger: hsl(0 85% 60%);
+
+  --color-theme-medium: hsl(from var(--color-theme) h s 60% / alpha);
+  --color-theme-light: hsl(from var(--color-theme) h s 50% / 5%);
+
+  --width-body: min(45rem, calc(100vw - 2rem));
+  --corner-radius-default: 0.5rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: hsl(0 0% 10%);
+    --color-text: white;
+
+    --color-theme: hsl(var(--hue-theme) 85% 60%);
+
+    --color-theme-medium: hsl(from var(--color-theme) h s 60% / alpha);
+    --color-theme-light: hsl(from var(--color-theme) h s 50% / 10%);
+  }
+}
+
+/*
+ * Element default styles
+ */
+
+a,
+a:visited {
+  color: var(--color-theme);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+button,
+.button,
+a.button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+label[type="button"] {
+  appearance: none;
+  border: none;
+  background-color: var(--color-theme-medium);
+  color: white;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+  line-height: normal;
+  border-radius: var(--corner-radius-default);
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-block;
+}
+
+:is(
+    button,
+    .button,
+    a.button,
+    input[type="submit"],
+    input[type="reset"],
+    input[type="button"],
+    label[type="button"]
+  ).danger {
+  background-color: var(--color-danger);
+}
+
+textarea,
+input:not(:checkbox) {
+  appearance: none;
+  border: none;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--corner-radius-default);
+  box-shadow: none;
+  max-width: 100%;
+  display: inline-block;
+  border: 1px solid var(--color-theme-medium);
+}
+
+/* 
+ * Layout 
+ */
+
+html {
+  font-family: var(--system-ui);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  display: grid;
+  grid-template-columns: 1fr var(--width-body) 1fr;
+}
+body > * {
+  grid-column: 2;
+}
+
+header {
+  background: var(--color-theme-light);
+  border-block-end: 1px solid var(--color-theme-medium);
+  grid-column: 1 / -1;
+  text-align: center;
+
+  a,
+  a:link,
+  a:visited {
+    display: block;
+    width: 100%;
+    padding-inline: calc((100vw - var(--width-body)) / 2);
+    padding-block: 1rem;
+
+    color: var(--color-text);
+    text-decoration: none;
+  }
+}
+
+main {
+  margin-block: 2rem;
+}
+
+main > * + * {
+  margin-top: 1rem;
+}
+
+footer {
+  border-block-start: 1px solid var(--color-theme-medium);
+  padding-block: 1rem;
+
+  > * + * {
+    margin-top: 1rem;
+  }
+  ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+
+    > * + *::before {
+      content: "|";
+      padding-inline: 0.5rem;
+    }
+  }
+
+  .admin-footer {
+    text-align: center;
+    font-size: 0.8rem;
+  }
+}
+
+/*
+ * Components 
+ */
+
+/* Article */
+article {
+  border: 1px solid var(--color-theme-medium);
+  padding: 1rem;
+  border-radius: var(--corner-radius-default);
+}
+
+article > * + *,
+article > del > * + * {
+  margin-block-start: 1rem;
+}
+
+/* Details */
+details {
+  background: var(--color-theme-light);
+  border: 1px solid var(--color-theme-medium);
+  padding: 1rem;
+  border-radius: var(--corner-radius-default);
+}
+
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+details > * + * {
+  margin-block-start: 1rem;
+}
+
+/* Form */
+form.inline {
+  display: inline;
+}
+
+/* Edit wish form */
+.edit-wish-form {
+  > * + * {
+    margin-top: 1rem;
+  }
+
+  @media (width > 25rem) {
+    .edit-line {
+      display: flex;
+      gap: 0.75rem;
+
+      > .input-label,
+      > .checkbox-wrapper {
+        width: 10rem;
+        text-align: end;
+        flex-shrink: 0;
+      }
+
+      > .input-label {
+        padding-block-start: 0.3rem;
+        cursor: pointer;
+      }
+
+      input[type="text"],
+      input[type="url"],
+      input[type="number"],
+      textarea {
+        width: 1rem;
+        flex-shrink: 1;
+        flex-grow: 1;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+    }
+
+    details .edit-line {
+      margin-left: -1rem;
+    }
+  }
+
+  @media (width < 25rem) {
+    .edit-line {
+      display: block;
+
+      > .input-label {
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+      input[type="text"],
+      input[type="url"],
+      input[type="number"],
+      textarea {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* fulfill form */
+.fulfill-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  input[type="text"] {
+    width: 10rem;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  input[type="submit"] {
+    flex-grow: 0;
+    flex-shrink: 1;
+  }
+}

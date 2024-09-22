@@ -5,11 +5,14 @@
 {% block header %}{{ ownerName }}s Wunschzettel{% endblock %}
 {% block content %}
     {% if noSpoiler %}
-    <a href="/yesSpoiler">Spoiler anzeigen</a>
-    <details>
-        <summary>Stats</summary>
-        Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}
-    </details>
+    <article>
+        <h3>Du bist auf der Spoiler-freien Ansicht!</h3>
+        <details>
+            <summary>Stats</summary>
+            <p>Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}</p>
+        </details>
+        <p><a href="/yesSpoiler" class="button">Spoiler anzeigen</a></p>
+    </article>
     {% endif %}
     {% if orderedWishlist|length == 0 %}
         <p>Dieser Wunschzettel ist leer!</p>
@@ -36,18 +39,18 @@
                     {% endif %}
                     {% if wish.link %}
                         <p>
-                            <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                            <a href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                         </p>
                     {% endif %}
                     {% if (not wish.isFulfilled()) or (noSpoiler and (not (wish.hasMatchingSecretIn(userFulfilledWishes)))) %}
                         <p>
-                            <a class="fulfill-button" href="/wishes/{{ wish.id }}">Das schenke ich!</a>
+                            <a class="button" href="/wishes/{{ wish.id }}">Das schenke ich!</a>
                         </p>
                     {% endif %}
                 {% if wish.isFulfilled() and ((not noSpoiler) or (wish.hasMatchingSecretIn(userFulfilledWishes))) %}</del>{% endif %}
                 {% if wish.hasMatchingSecretIn(userFulfilledWishes) %}
                     <p>
-                        <a class="reopen-button" href="/wishes/{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
+                        <a class="button" href="/wishes/{{ wish.id }}/{{ wish.secret }}">Wunsch wieder als offen markieren</a>
                     </p>
                 {% endif %}
             </article>

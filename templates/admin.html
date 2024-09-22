@@ -6,8 +6,10 @@
 {% block content %}
     <details>
         <summary>Stats</summary>
-        Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }} <br>
-        Gelöschte Wünsche: {{ stats['nrDeleted'] }}
+        <p>
+            Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }} <br>
+            Gelöschte Wünsche: {{ stats['nrDeleted'] }}
+        </p>
     </details>
     {% if message %}
         <div class="message-card">
@@ -17,14 +19,14 @@
                 <form class="undo-form" method="post">
                     <input type="hidden" name="action" value="{{ messageUndo['action'] }}">
                     <input type="hidden" name="wishId" value="{{ messageUndo['wishID'] }}">
-                    <input class="undo-button" type="submit" value="Rückgängig">
+                    <input type="submit" value="Rückgängig">
                 </form>
                 {% endif %}
             </p>
         </div>
     {% endif %}
 
-    <a href="/admin/addWish">Neuen Wunsch hinzufügen</a>
+    <p><a href="/admin/addWish" class="button">Neuen Wunsch hinzufügen</a></p>
 
     {% for wish in orderedWishlist %}
         <article>
@@ -37,11 +39,13 @@
                 </h3>
                 <details>
                     <summary>Spoiler</summary>
-                    {% if wish.giver %}
-                        Dieser Wunsch wird dir geschenkt von {{ wish.giver }}!
-                    {% else %}
-                        Dieser Wunsch ist noch offen.
-                    {% endif %}
+                    <p>
+                        {% if wish.giver %}
+                            Dieser Wunsch wird dir geschenkt von {{ wish.giver }}!
+                        {% else %}
+                            Dieser Wunsch ist noch offen.
+                        {% endif %}
+                    </p>
                 </details>
                 {% if wish.desc %}
                     <p>
@@ -50,20 +54,18 @@
                 {% endif %}
                 {% if wish.link %}
                     <p>
-                        <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                        <a href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                     </p>
                 {% endif %}
-                <p>
-                    <a href="/admin/editWish/{{ wish.id }}">Wunsch bearbeiten</a>
-                    <a href="/admin/addWish?copy={{ wish.id }}">Wunsch kopieren</a>
-                </p>
-                <form method="post">
-                    <p>
+                <div>
+                    <a href="/admin/editWish/{{ wish.id }}" class="button">Wunsch bearbeiten</a>
+                    <a href="/admin/addWish?copy={{ wish.id }}" class="button">Wunsch kopieren</a>
+                    <form method="post" class="inline">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="wishId" value="{{ wish.id }}">
-                        <input class="danger-button" type="submit" value="Wunsch löschen">
-                    </p>
-                </form>
+                        <input class="button danger" type="submit" value="Wunsch löschen">
+                    </form>
+                </div>
         </article>
     {% endfor %}
     <details>
@@ -81,31 +83,29 @@
                     {% endif %}
                     {% if wish.link %}
                         <p>
-                            <a class="shop-link" href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
+                            <a href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                         </p>
                     {% endif %}
                 </details>
-                <form method="post">
-                    <p>
+                <div>
+                    <form method="post" class="inline">
                         <input type="hidden" name="action" value="restore">
                         <input type="hidden" name="wishId" value="{{ wish.id }}">
-                        <input class="restore-button" type="submit" value="Wunsch wiederherstellen">
-                    </p>
-                </form>
-                <p>
-                    <a class="edit-as-new-button" href="/admin/addWish?copy={{ wish.id }}">Wunsch als neu bearbeiten</a>
-                </p>
+                        <input type="submit" value="Wunsch wiederherstellen">
+                    </form>
+                    <a class="button" href="/admin/addWish?copy={{ wish.id }}">Wunsch als neu bearbeiten</a>
+                </div>
             </article>
         {% endfor %}
     </details>
     <form method="post">
         <p>
             <input type="hidden" name="action" value="regenerateAdminLink">
-            <input class="danger-button" type="submit" value="Neuen Admin-Link generieren">
+            <input class="buttom danger" type="submit" value="Neuen Admin-Link generieren">
         </p>
     </form>
 {% endblock %}
 
 {% block adminFooter %}
-Admin-Link: <a href="{{ loginLink }}">{{ loginLink }}</a>
+<p class="admin-footer">Admin-Link: <a href="{{ loginLink }}">{{ loginLink }}</a></p>
 {% endblock %}
