@@ -73,6 +73,11 @@ def make_session_permanent():
     session.permanent = True
 
 
+@app.context_processor
+def inject_config():
+    return dict(ownerName=app.config["OWNER_NAME"])
+
+
 @app.route("/")
 def listView():
     if session.get(SESSION_NO_SPOILER):
@@ -80,7 +85,6 @@ def listView():
 
     return render_template(
         "list.html",
-        ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishes(
             giftedWishSecrets=session.get(SESSION_FULFILLED_WISHES, [])
         ),
@@ -106,7 +110,6 @@ def noSpoilerView():
     session[SESSION_NO_SPOILER] = True
     return render_template(
         "list.html",
-        ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(
             giftedWishSecrets=session.get(SESSION_FULFILLED_WISHES, [])
         ),
@@ -131,19 +134,16 @@ def wishView(id):
     if wish.isFulfilled():
         return render_template(
             "wish_already_fulfilled.html",
-            ownerName=app.config["OWNER_NAME"],
             loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
     if wish.endless:
         return render_template(
             "wish_endless.html",
-            ownerName=app.config["OWNER_NAME"],
             wishTitle=wish.title,
             loggedIn=session.get(SESSION_IS_LOGGED_IN),
         )
     return render_template(
         "wish.html",
-        ownerName=app.config["OWNER_NAME"],
         wishTitle=wish.title,
         loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
@@ -158,9 +158,7 @@ def wishFormSubmit(id):
         try:
             wishlist.markFulfilled(id, giver)
         except WishFulfilledError:
-            return render_template(
-                "wish_already_fulfilled.html", ownerName=app.config["OWNER_NAME"]
-            )
+            return render_template("wish_already_fulfilled.html")
         secret = wishlist.getWishByID(id).secret
     except WishNotFoundError:
         return error(
@@ -199,7 +197,6 @@ def thankYouView(id, secret):
 
     return render_template(
         "thank_you.html",
-        ownerName=app.config["OWNER_NAME"],
         wishTitle=wish.title,
         url=url_for("thankYouView", id=id, secret=secret, _external=True),
         loggedIn=session.get(SESSION_IS_LOGGED_IN),
@@ -250,7 +247,6 @@ def adminView():
         loginLink=url_for(
             "loginView", secret=app.config["ADMIN_SECRET"], _external=True
         ),
-        ownerName=app.config["OWNER_NAME"],
         orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
         stats=wishlist.getStats(),
         orderedDeletedWishlist=wishlist.getDeletedWishes(),
@@ -269,7 +265,6 @@ def adminFormSubmit():
             loginLink=url_for(
                 "loginView", secret=app.config["ADMIN_SECRET"], _external=True
             ),
-            ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
             orderedDeletedWishlist=wishlist.getDeletedWishes(),
@@ -285,7 +280,6 @@ def adminFormSubmit():
             loginLink=url_for(
                 "loginView", secret=app.config["ADMIN_SECRET"], _external=True
             ),
-            ownerName=app.config["OWNER_NAME"],
             orderedWishlist=wishlist.getPriorityOrderedWishesNoSpoiler(),
             stats=wishlist.getStats(),
             orderedDeletedWishlist=wishlist.getDeletedWishes(),
@@ -320,7 +314,6 @@ def addWishView():
 
     return render_template(
         "upsert_wish.html",
-        ownerName=app.config["OWNER_NAME"],
         template=template,
         loggedIn=session.get(SESSION_IS_LOGGED_IN),
     )
@@ -357,7 +350,6 @@ def editWishView(id):
 
     return render_template(
         "upsert_wish.html",
-        ownerName=app.config["OWNER_NAME"],
         template=wish,
         update=True,
         loggedIn=session.get(SESSION_IS_LOGGED_IN),

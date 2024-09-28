@@ -45,7 +45,6 @@ def error(app: Flask, code: int, title: str, message: str):
     return (
         render_template(
             "error.html",
-            ownerName=app.config["OWNER_NAME"],
             errorTitle=title,
             errorMessage=message,
             loggedIn=session.get(SESSION_IS_LOGGED_IN),
