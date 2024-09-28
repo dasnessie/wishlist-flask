@@ -61,15 +61,15 @@ h6 {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-  --hue-theme: 216;
+  --hue-theme: 260;
 
   --color-background: white;
   --color-text: hsl(0 0% 10%);
-  --color-theme: hsl(var(--hue-theme) 85% 30%);
+  --color-theme: oklch(0.4 0.25 var(--hue-theme));
   --color-danger: hsl(0 85% 60%);
 
-  --color-theme-medium: hsl(from var(--color-theme) h s 60% / alpha);
-  --color-theme-light: hsl(from var(--color-theme) h s 50% / 5%);
+  --color-theme-medium: oklch(from var(--color-theme) 0.6 C H / alpha);
+  --color-theme-light: oklch(from var(--color-theme) L C H / 8%);
 
   --width-body: min(45rem, calc(100vw - 2rem));
   --corner-radius-default: 0.5rem;
@@ -78,11 +78,10 @@ h6 {
   :root {
     --color-background: hsl(0 0% 10%);
     --color-text: white;
+    --color-theme: oklch(0.65 0.15 var(--hue-theme));
 
-    --color-theme: hsl(var(--hue-theme) 85% 60%);
-
-    --color-theme-medium: hsl(from var(--color-theme) h s 60% / alpha);
-    --color-theme-light: hsl(from var(--color-theme) h s 50% / 10%);
+    --color-theme-medium: oklch(from var(--color-theme) L 0.2 H / alpha);
+    --color-theme-light: oklch(from var(--color-theme) L C H / 20%);
   }
 }
 
