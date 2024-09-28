@@ -73,6 +73,12 @@ def make_session_permanent():
     session.permanent = True
 
 
+@app.before_request
+def clear_trailing():
+    if request.path != "/" and request.path.endswith("/"):
+        return redirect(request.path[:-1])
+
+
 @app.context_processor
 def inject_config():
     return {"ownerName": app.config["OWNER_NAME"], "themeHue": app.config["THEME_HUE"]}
