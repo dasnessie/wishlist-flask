@@ -232,6 +232,11 @@ article > del > * + * {
   margin-block-start: 1rem;
 }
 
+article.no-spoiler-info {
+  background: var(--color-theme-light);
+  margin-bottom: 4rem;
+}
+
 /* Details */
 details {
   background: var(--color-theme-light);
