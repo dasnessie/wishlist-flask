@@ -75,7 +75,7 @@ def make_session_permanent():
 
 @app.context_processor
 def inject_config():
-    return dict(ownerName=app.config["OWNER_NAME"])
+    return {"ownerName": app.config["OWNER_NAME"], "themeHue": app.config["THEME_HUE"]}
 
 
 @app.route("/")

@@ -61,8 +61,6 @@ h6 {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-  --hue-theme: 260;
-
   --color-background: white;
   --color-text: hsl(0 0% 10%);
   --color-theme: oklch(0.4 0.25 var(--hue-theme));

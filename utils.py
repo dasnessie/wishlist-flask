@@ -16,6 +16,7 @@ def setDefaultConfigValues(app):
     defaultConfig = {
         "OWNER_NAME": "Jemand",
         "SQLALCHEMY_DATABASE_URI": "sqlite:///wishes.sqlite3",
+        "THEME_HUE": 260,
     }
     # for any key not already set, set the default value
     for key, value in defaultConfig.items():
