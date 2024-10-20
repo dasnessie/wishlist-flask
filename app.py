@@ -1,5 +1,6 @@
 from datetime import timedelta
 import warnings
+import secrets
 
 from utils import *
 
@@ -13,7 +14,6 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-import uuid
 import tomllib
 import tomli_w
 
@@ -26,11 +26,11 @@ except FileNotFoundError:
 writeConfig = False
 
 if not configFileContents.get("ADMIN_SECRET"):
-    configFileContents["ADMIN_SECRET"] = str(uuid.uuid4())
+    configFileContents["ADMIN_SECRET"] = secrets.token_hex()
     writeConfig = True
 
 if not configFileContents.get("SECRET_KEY"):
-    configFileContents["SECRET_KEY"] = str(uuid.uuid4())
+    configFileContents["SECRET_KEY"] = secrets.token_hex()
     writeConfig = True
 
 if writeConfig:
@@ -305,7 +305,7 @@ def adminFormSubmit():
                 configFileContents = tomllib.load(f)
         except FileNotFoundError:
             configFileContents = {}
-        configFileContents["ADMIN_SECRET"] = str(uuid.uuid4())
+        configFileContents["ADMIN_SECRET"] = secrets.token_hex()
         with open("config/config.toml", "wb") as f:
             tomli_w.dump(configFileContents, f)
         app.config.from_mapping(configFileContents)
