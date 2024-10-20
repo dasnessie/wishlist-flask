@@ -1,4 +1,3 @@
-import typing
 from datetime import timedelta
 import warnings
 
@@ -8,7 +7,6 @@ from flask import (
     Flask,
     render_template,
     request,
-    make_response,
     redirect,
     url_for,
     session,
