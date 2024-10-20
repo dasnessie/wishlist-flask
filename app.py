@@ -68,6 +68,20 @@ with app.app_context():
 wishlist = Wishlist()
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # Redirect to lowercased path if necessary
+    if any(x.isupper() for x in request.path):
+        return redirect(request.path.lower())
+
+    return error(
+        app=app,
+        code=404,
+        title="Ungültige URL",
+        message="Diese Seite gibt es nicht.",
+    )
+
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -99,19 +113,13 @@ def listView():
     )
 
 
-@app.route("/yesSpoiler")
+@app.route("/yes-spoiler")
 def yesSpoiler():
     session[SESSION_NO_SPOILER] = False
     return redirect(url_for("listView"))
 
 
-# TODO remove once we have a general solution for wrongly cased routes (See #8)
-@app.route("/nospoiler")
-def noSpoilerRedirect():
-    return redirect(url_for("noSpoilerView"))
-
-
-@app.route("/noSpoiler")
+@app.route("/no-spoiler")
 def noSpoilerView():
     session[SESSION_NO_SPOILER] = True
     return render_template(
