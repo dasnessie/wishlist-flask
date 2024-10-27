@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 import warnings
 import secrets
 
@@ -17,8 +18,10 @@ from sqlalchemy.orm import DeclarativeBase
 import tomllib
 import tomli_w
 
+configFilePath = os.path.join(os.path.dirname(__file__), "config/config.toml")
+
 try:
-    with open("config/config.toml", "rb") as f:
+    with open(configFilePath, "rb") as f:
         configFileContents = tomllib.load(f)
 except FileNotFoundError:
     configFileContents = {}
@@ -34,7 +37,8 @@ if not configFileContents.get("SECRET_KEY"):
     writeConfig = True
 
 if writeConfig:
-    with open("config/config.toml", "wb") as f:
+    os.makedirs(os.path.dirname(configFilePath), exist_ok=True)
+    with open(configFilePath, "wb") as f:
         tomli_w.dump(configFileContents, f)
 
 
