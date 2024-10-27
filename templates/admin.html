@@ -55,7 +55,7 @@
                         <a href="{{ wish.link }}">Ansehen auf {{ wish.getLinkDomain() }}</a>
                     </p>
                 {% endif %}
-                <div>
+                <div class="button-row">
                     <a href="/admin/editWish/{{ wish.id }}" class="button">Wunsch bearbeiten</a>
                     <a href="/admin/addWish?copy={{ wish.id }}" class="button">Wunsch kopieren</a>
                     <form method="post" class="inline">

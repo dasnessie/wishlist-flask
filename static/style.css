@@ -114,6 +114,9 @@ label[type="button"] {
   cursor: pointer;
   font-weight: bold;
   display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :is(
@@ -350,4 +353,11 @@ form.inline {
   .message {
     flex-grow: 1;
   }
+}
+
+/* button-row */
+.button-row {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
 }
