@@ -30,7 +30,9 @@
 
         <label class="edit-line">
             <span class="input-label">Beschreibung:</span>
-            <textarea name="desc" placeholder="Ich wünsche mir…">{% if template %}{{ template.desc }}{% endif %}</textarea>
+            <div class="autosize-textarea">
+              <textarea name="desc" placeholder="Ich wünsche mir…">{% if template %}{{ template.desc }}{% endif %}</textarea>
+            </div>
         </label>
 
         <label class="edit-line">

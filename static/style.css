@@ -284,15 +284,15 @@ form.inline {
 
       input[type="text"],
       input[type="url"],
-      input[type="number"],
-      textarea {
+      input[type="number"] {
         width: 1rem;
         flex-shrink: 1;
         flex-grow: 1;
       }
 
-      textarea {
-        resize: vertical;
+      .autosize-textarea {
+        flex-shrink: 1;
+        flex-grow: 1;
       }
     }
 
@@ -360,4 +360,30 @@ form.inline {
   display: flex;
   gap: 0.2rem;
   flex-wrap: wrap;
+}
+
+/* autosize-textarea */
+
+.autosize-textarea {
+  display: grid;
+}
+.autosize-textarea::after {
+  /* Note the weird space! Needed to preventy jumpy behavior */
+  content: attr(data-replicated-value) " ";
+
+  /* Hidden from view, clicks, and screen readers */
+  visibility: hidden;
+}
+.autosize-textarea > textarea {
+  resize: none;
+  /* Firefox shows scrollbar on growth, you can hide like this. */
+  overflow: hidden;
+}
+.autosize-textarea > textarea,
+.autosize-textarea::after {
+  border: 1px solid black;
+  padding: 0.5rem;
+  font: inherit;
+  white-space: pre-wrap;
+  grid-area: 1 / 1 / 2 / 2;
 }
