@@ -180,6 +180,17 @@ header {
     color: var(--color-text);
     text-decoration: none;
   }
+
+  .description {
+    border-block-start: 1px solid var(--color-theme-medium);
+    width: var(--width-body);
+    margin-inline: auto;
+    padding-block: 1rem;
+
+    > * + * {
+      margin-top: 0.5rem;
+    }
+  }
 }
 
 main {

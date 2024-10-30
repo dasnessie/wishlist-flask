@@ -97,7 +97,15 @@ def clear_trailing():
 
 @app.context_processor
 def inject_config():
-    return {"ownerName": app.config["OWNER_NAME"], "themeHue": app.config["THEME_HUE"]}
+    return {
+        "ownerName": app.config["OWNER_NAME"],
+        "themeHue": app.config["THEME_HUE"],
+        "description": (
+            app.config.get("DESCRIPTION").split("\n")
+            if app.config.get("DESCRIPTION")
+            else None
+        ),
+    }
 
 
 @app.route("/")

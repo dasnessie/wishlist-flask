@@ -13,8 +13,17 @@
       <a href="/">
         <h1>{% block header %}{{ ownerName }}s Wunschzettel{% endblock %}</h1>
       </a>
+      {% if description %}
+        <div class="description">
+          {% for para in description %}
+            <p>{{para}}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
     </header>
-    <main>{% block content %}{% endblock %}</main>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
     <footer>
       {% block adminFooter %}{% endblock %}
       <ul>
