@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html style="--hue-theme: {{ themeHue }}">
-  <head>
-    {% block head %}
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>{% block pagetitle %}{% endblock %}{% block installationtitle %}Wishlist2{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% endblock %}
-  </head>
-  <body>
-    <header>
-      <a href="/">
-        <h1>{% block header %}{{ ownerName }}s Wunschzettel{% endblock %}</h1>
-      </a>
-      {% if description %}
-        <div class="description">
-          {% for para in description %}
-            <p>{{para}}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </header>
-    <main>
-      {% block content %}{% endblock %}
-    </main>
-    <footer>
-      {% block adminFooter %}{% endblock %}
-      <ul>
-        <li><a href="https://github.com/dasnessie/wishlist-flask/">Wishlist auf Github</a></li>
-        {% if loggedIn %}
-        <li><a href="/admin">Admin</a></li>
-        <li><a href="/admin/logout">Logout</a></li>
-        {% endif %}
-      </ul>
-    </footer>
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
-  </body>
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <title>{% block pagetitle %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% endblock %}
+    </head>
+    <body>
+        <header>
+            <a href="/">
+                <h1>{% block header %}{{ ownerName }}s Wunschzettel{% endblock %}</h1>
+            </a>
+            {% if description %}
+                <div class="description">
+                    {% for para in description %}
+                        <p>{{para}}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        <footer>
+            {% block adminFooter %}{% endblock %}
+            <ul>
+                <li><a href="https://github.com/dasnessie/wishlist-flask/">Wishlist auf Github</a></li>
+                {% if loggedIn %}
+                <li><a href="/admin">Admin</a></li>
+                <li><a href="/admin/logout">Logout</a></li>
+                {% endif %}
+            </ul>
+        </footer>
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
+    </body>
 </html>
