@@ -129,6 +129,11 @@ class Wishlist:
                 .filter((Wish.deleted == None) & (Wish.giver != ""))
                 .count()
             )
+            stats["endless"] = (
+                db.session.query(Wish)
+                .filter((Wish.deleted == None) & (Wish.endless == True))
+                .count()
+            )
             stats["nrDeleted"] = (
                 db.session.query(Wish).filter(Wish.deleted != None).count()
             )

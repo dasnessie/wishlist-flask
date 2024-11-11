@@ -9,7 +9,13 @@
         <h3>Du bist auf der Spoiler-freien Ansicht!</h3>
         <details>
             <summary>Stats</summary>
-            <p>Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }}</p>
+            <p>
+                Wünsche gesamt: {{ stats['count'] }}<br>
+                Endlose Wünsche: {{ stats['endless'] }}<br>
+                Erledigte Wünsche: {{ stats['fulfilled'] }}<br>
+                Offene, nicht-endlose Wünsche: {{ stats['count']-stats['endless']-stats['fulfilled'] }}<br>
+                Offene Wünsche gesamt: {{ stats['count']-stats['fulfilled'] }}
+            </p>
         </details>
         <p><a href="/yes-spoiler" class="button">Spoiler anzeigen</a></p>
     </article>

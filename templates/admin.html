@@ -7,7 +7,11 @@
     <details>
         <summary>Stats</summary>
         <p>
-            Erledigte Wünsche: {{ stats['fulfilled'] }}/{{ stats['count'] }} <br>
+            Wünsche gesamt: {{ stats['count'] }}<br>
+            Endlose Wünsche: {{ stats['endless'] }}<br>
+            Erledigte Wünsche: {{ stats['fulfilled'] }}<br>
+            Offene, nicht-endlose Wünsche: {{ stats['count']-stats['endless']-stats['fulfilled'] }}<br>
+            Offene Wünsche gesamt: {{ stats['count']-stats['fulfilled'] }}<br>
             Gelöschte Wünsche: {{ stats['nrDeleted'] }}
         </p>
     </details>
