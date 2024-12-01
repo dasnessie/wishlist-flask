@@ -66,6 +66,8 @@ h6 {
   --color-theme: oklch(0.4 0.25 var(--hue-theme));
   --color-danger: hsl(0 85% 60%);
 
+  --color-gray: hsl(0 0% 40%);
+
   --color-theme-medium: oklch(from var(--color-theme) 0.6 C H / alpha);
   --color-theme-light: oklch(from var(--color-theme) L C H / 8%);
 
@@ -77,6 +79,8 @@ h6 {
     --color-background: hsl(0 0% 10%);
     --color-text: white;
     --color-theme: oklch(0.65 0.15 var(--hue-theme));
+
+    --color-gray: hsl(0 0% 60%);
 
     --color-theme-medium: oklch(from var(--color-theme) L 0.2 H / alpha);
     --color-theme-light: oklch(from var(--color-theme) L C H / 20%);
@@ -397,4 +401,27 @@ form.inline {
   font: inherit;
   white-space: pre-wrap;
   grid-area: 1 / 1 / 2 / 2;
+}
+
+/* prio-heading */
+.prio-heading {
+  display: flex;
+  font-size: 1rem;
+  font-weight: normal;
+  color: var(--color-gray);
+  background-color: var(--color-background);
+  gap: 0.3rem;
+}
+.prio-heading::before,
+.prio-heading::after {
+  content: " ";
+  display: block;
+  border-bottom: 1px solid var(--color-gray);
+  margin-bottom: 0.7rem;
+}
+.prio-heading::before {
+  width: 1.5rem;
+}
+.prio-heading::after {
+  flex-grow: 1;
 }

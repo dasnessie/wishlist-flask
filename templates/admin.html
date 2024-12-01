@@ -15,7 +15,7 @@
         </p>
     </details>
     {% if message %}
-        <div class="message-card">
+        <div class="message-card"> 
             <span class="message">{{ message }}</span>
             {% if messageUndo %}
             <form method="post">
@@ -29,7 +29,11 @@
 
     <p><a href="/admin/addWish" class="button">Neuen Wunsch hinzufügen</a></p>
 
+    {% set ns = namespace(previousPriority=Infinity) %}
     {% for wish in orderedWishlist %}
+        {% if wish.priority != ns.previousPriority %}
+            <h2 class="prio-heading">Prio {{ wish.priority }}</h2>
+        {% endif %}
         <article>
                 <h3>
                     {% if wish.link %}
@@ -68,6 +72,7 @@
                     </form>
                 </div>
         </article>
+        {% set ns.previousPriority = wish.priority %}
     {% endfor %}
     <details>
         <summary>Gelöschte Wünsche</summary>
