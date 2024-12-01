@@ -4,7 +4,7 @@
         {% block head %}
         <meta charset="utf-8">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <title>{% block pagetitle %}{% endblock %}</title>
+        <title>{% block pagetitle %}{% endblock %}{% block installationtitle %}{{ ownerName }}s Wunschzettel{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% endblock %}
     </head>
